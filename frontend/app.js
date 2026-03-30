@@ -252,14 +252,30 @@ async function renderTrendChart(granularity) {
 // ---------- Top 10 Services Bar Chart ----------
 async function renderServicesChart() {
   const now = new Date();
-  const period = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  let data;
-  try {
-    data = await fetchServices("MONTHLY", period);
-  } catch (e) {
-    showError(`Services: ${e.message}`);
-    return;
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+
+  // Aggregate daily data for the current month
+  const dayCount = now.getDate();
+  const allServices = {};
+  for (let d = 1; d <= dayCount; d++) {
+    const day = `${year}-${month}-${String(d).padStart(2, "0")}`;
+    try {
+      const dayData = await fetchServices("DAILY", day);
+      const items = Array.isArray(dayData) ? dayData : dayData.services ?? [];
+      for (const svc of items) {
+        if (!allServices[svc.service_name]) {
+          allServices[svc.service_name] = { amount_usd: 0, amount_brl: 0 };
+        }
+        allServices[svc.service_name].amount_usd += Number(svc.amount_usd ?? 0);
+        allServices[svc.service_name].amount_brl += Number(svc.amount_brl ?? 0);
+      }
+    } catch (_) { /* skip missing days */ }
   }
+
+  let data = Object.entries(allServices)
+    .map(([name, v]) => ({ service_name: name, amount_usd: v.amount_usd, amount_brl: v.amount_brl }))
+    .sort((a, b) => b[amountKey()] - a[amountKey()]);
 
   const items = (Array.isArray(data) ? data : data.services ?? []).slice(0, 10);
   const labels = items.map((d) => d.service_name);
@@ -391,12 +407,13 @@ async function renderHeatmap() {
   if (!grid) return;
   grid.innerHTML = "";
 
-  // Fetch last 8 monthly periods for the heatmap
+  // Fetch last 8 daily periods for the heatmap
   const periods = [];
   const now = new Date();
   for (let i = 7; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    periods.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    const d = new Date(now);
+    d.setDate(d.getDate() - i - 1);
+    periods.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`);
   }
 
   // Fetch service data for each period
@@ -404,7 +421,7 @@ async function renderHeatmap() {
   const serviceSet = new Set();
   for (const p of periods) {
     try {
-      const res = await fetchServices("MONTHLY", p);
+      const res = await fetchServices("DAILY", p);
       const items = Array.isArray(res) ? res : res.services ?? [];
       periodData[p] = items;
       items.forEach((s) => serviceSet.add(s.service_name));
@@ -662,11 +679,13 @@ async function init() {
     await renderTrendChart(trendGranularity);
     await renderServicesChart();
 
-    // Use service data for donut (account breakdown)
+    // Use yesterday's daily data for donut (account breakdown)
     const now = new Date();
-    const period = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yPeriod = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
     try {
-      const svcData = await fetchServices("MONTHLY", period);
+      const svcData = await fetchServices("DAILY", yPeriod);
       renderAccountDonut(svcData);
     } catch (e) {
       showError(`Donut: ${e.message}`);

@@ -30,6 +30,18 @@ def handler(event, context):
     ce_client = get_ce_client()
 
     ingestion_svc = CostIngestionService(cost_repo, currency_svc, ce_client)
+
+    # Support backfill: {"detail": {"granularity": "DAILY", "backfill_days": 30}}
+    backfill_days = detail.get("backfill_days")
+    if backfill_days and granularity == "DAILY":
+        import datetime
+        total = 0
+        for i in range(int(backfill_days), 0, -1):
+            day = (datetime.date.today() - datetime.timedelta(days=i)).isoformat()
+            result = ingestion_svc.ingest_day(day)
+            total += result.get("records", 0)
+        return {"status": "ok", "records": total}
+
     result = ingestion_svc.ingest(granularity)
 
     logger.info("Ingestion result for %s: %s", granularity, result)
