@@ -1,0 +1,7 @@
+[tools]
+python = "3.12"
+node = "20"
+"npm:aws-cdk" = "latest"
+
+[env]
+AWS_PROFILE = "gsti-us"
