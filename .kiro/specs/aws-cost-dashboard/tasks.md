@@ -250,8 +250,8 @@ Incremental implementation of the CostWatch serverless AWS Cost Dashboard. Tasks
     - Set CloudWatch Logs retention to 30 days on all Lambda log groups
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 4.7, 12.1, 12.2, 12.3, 12.7, 12.8_
 
-- [ ] 12. CDK infrastructure — SchedulerStack
-  - [ ] 12.1 Implement scheduler_stack.py
+- [x] 12. CDK infrastructure — SchedulerStack
+  - [x] 12.1 Implement scheduler_stack.py
     - Create `cdk/stacks/scheduler_stack.py` with `SchedulerStack` class
     - Accept Ingestion Lambda ARN from ApiStack as constructor parameter
     - Create 3 EventBridge rules:
@@ -261,17 +261,17 @@ Incremental implementation of the CostWatch serverless AWS Cost Dashboard. Tasks
     - Grant each rule permission to invoke the Ingestion Lambda
     - _Requirements: 6.1, 6.2, 6.3_
 
-- [ ] 13. CDK app entry point
-  - [ ] 13.1 Implement cdk/app.py and cdk.json
+- [x] 13. CDK app entry point
+  - [x] 13.1 Implement cdk/app.py and cdk.json
     - Create `cdk/app.py` that instantiates DatabaseStack → ApiStack → SchedulerStack with correct dependency wiring
     - Create `cdk/cdk.json` with CDK configuration pointing to `app.py`
     - _Requirements: 5.1, 6.1_
 
-- [ ] 14. Checkpoint — Verify CDK synth
+- [x] 14. Checkpoint — Verify CDK synth
   - Ensure `cdk synth` succeeds without errors, ask the user if questions arise.
 
-- [ ] 15. Frontend dashboard — HTML structure and CSS theme
-  - [ ] 15.1 Create index.html
+- [x] 15. Frontend dashboard — HTML structure and CSS theme
+  - [x] 15.1 Create index.html
     - Create `frontend/index.html` with semantic layout
     - Include header with CostWatch logo, USD/BRL pill toggle, "last synced" timestamp, pulsing green "Live" dot
     - KPI card grid (4 cards): Today's Cost, Month-to-Date, Previous Month, Forecast — each with sparkline SVG placeholder and delta badge
@@ -286,7 +286,7 @@ Incremental implementation of the CostWatch serverless AWS Cost Dashboard. Tasks
     - Link `styles.css` and `app.js`
     - _Requirements: 7.1, 7.2, 7.4, 7.5, 8.1, 9.1, 9.3, 9.4, 9.5, 10.1, 10.3, 10.5_
 
-  - [ ] 15.2 Create styles.css
+  - [x] 15.2 Create styles.css
     - Create `frontend/styles.css` with Dark Command Center theme
     - Define CSS variables: `--bg-deep: #0A0E14`, `--bg-surface: #111820`, `--bg-card: #161D27`, `--bg-card-hover: #1C2535`, `--accent-green: #00FF87`, `--accent-coral: #FF4757`, `--accent-amber: #FFB830`, `--accent-blue: #3D9DF3`, `--text-primary: #E8EDF5`, `--text-secondary: #7A8BA0`, `--text-muted: #3D4F63`, `--border: #1E2C3D`, `--border-glow: rgba(0, 255, 135, 0.15)`
     - Space Mono for headings/numbers, DM Sans for body/labels
@@ -298,34 +298,34 @@ Incremental implementation of the CostWatch serverless AWS Cost Dashboard. Tasks
     - Responsive grid layout for all sections
     - _Requirements: 7.3, 8.5, 10.2, 11.2, 11.3_
 
-- [ ] 16. Frontend dashboard — Application logic
-  - [ ] 16.1 Create app.js — CONFIG, API calls, and data fetching
+- [x] 16. Frontend dashboard — Application logic
+  - [x] 16.1 Create app.js — CONFIG, API calls, and data fetching
     - Create `frontend/app.js` with `CONFIG` object (`apiBase`, `apiKey`)
     - Implement API fetch functions for each endpoint: `fetchSummary()`, `fetchServices(granularity, period)`, `fetchTrend(granularity, n)`, `fetchForecast()`
     - Include `x-api-key` header in all fetch calls
     - Handle API errors gracefully with user-visible feedback
     - _Requirements: 7.6, 4.1, 4.2, 4.3, 4.4_
 
-  - [ ] 16.2 Implement KPI cards rendering and animations
+  - [x] 16.2 Implement KPI cards rendering and animations
     - Render 4 KPI cards with data from `/summary` endpoint
     - Animate each KPI number from 0 to value over 1.2s using easeOutExpo curve
     - Generate 60x24px inline sparkline SVGs from last 7 periods of data
     - Compute and display delta badges (green for improvement, coral for overspend)
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [ ] 16.3 Implement charts — trend line, service bars, account donut
+  - [x] 16.3 Implement charts — trend line, service bars, account donut
     - Trend line chart (Chart.js): full-width, granularity tabs (Daily/Weekly/Monthly), re-fetch on tab switch with 600ms animation
     - Top 10 services horizontal bar chart: sorted descending, gradient fill accent-blue → accent-green, hover brightens bar + tooltip with % of total
     - Account breakdown donut chart: center label with animated total amount
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 11.4_
 
-  - [ ] 16.4 Implement service heatmap
+  - [x] 16.4 Implement service heatmap
     - CSS grid: rows = top 10 services, columns = last 8 periods
     - Cell colors: `--bg-card` (low) → `--accent-amber` (medium) → `--accent-coral` (high)
     - Hover tooltip with exact cost amount and period label
     - _Requirements: 9.5, 9.6_
 
-  - [ ] 16.5 Implement budget tracker and team cost table
+  - [x] 16.5 Implement budget tracker and team cost table
     - Budget tracker: one row per account/team, animated progress bar, current spend vs budget limit
     - Progress bar colors: green (<70%), amber (70-90%), coral (>90%), "OVER BUDGET" badge (>100%)
     - Team cost table: columns — Team, Daily Average, Weekly Total, Monthly Total, % of Total, sparkline trend
@@ -333,13 +333,13 @@ Incremental implementation of the CostWatch serverless AWS Cost Dashboard. Tasks
     - Search input for real-time row filtering
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
 
-  - [ ] 16.6 Implement currency toggle and global animations
+  - [x] 16.6 Implement currency toggle and global animations
     - USD/BRL pill toggle: animate all displayed cost amounts from current to selected currency
     - Staggered card fade-in on page load (0ms, 80ms, 160ms increments)
     - Pulsing green "Live" dot in header
     - _Requirements: 11.1, 11.2, 11.3_
 
-- [ ] 17. Final checkpoint — Full integration verification
+- [x] 17. Final checkpoint — Full integration verification
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

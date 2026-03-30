@@ -1,8 +1,6 @@
 """Tests for auth.py API key validation."""
 
-import os
-
-from src.utils.auth import validate_api_key
+from utils.auth import validate_api_key
 
 
 class TestValidateApiKey:

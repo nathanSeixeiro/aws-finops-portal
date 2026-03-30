@@ -1,0 +1,673 @@
+/* ============================================================
+   CostWatch — Dark Command Center Theme
+   ============================================================ */
+
+/* ---------- CSS Variables ---------- */
+:root {
+  --bg-deep: #0A0E14;
+  --bg-surface: #111820;
+  --bg-card: #161D27;
+  --bg-card-hover: #1C2535;
+  --accent-green: #00FF87;
+  --accent-coral: #FF4757;
+  --accent-amber: #FFB830;
+  --accent-blue: #3D9DF3;
+  --text-primary: #E8EDF5;
+  --text-secondary: #7A8BA0;
+  --text-muted: #3D4F63;
+  --border: #1E2C3D;
+  --border-glow: rgba(0, 255, 135, 0.15);
+
+  --font-heading: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 0.25s ease;
+}
+
+/* ---------- Reset & Base ---------- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* ---------- Screen-reader only utility ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header__logo {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-green);
+  letter-spacing: -0.5px;
+}
+
+.header__live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent-green);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header__live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header__synced {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ---------- Currency Toggle ---------- */
+.currency-toggle {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.currency-toggle__btn {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.currency-toggle__btn--active {
+  background: var(--accent-green);
+  color: var(--bg-deep);
+}
+
+.currency-toggle__btn:hover:not(.currency-toggle__btn--active) {
+  color: var(--text-secondary);
+}
+
+/* ---------- Dashboard Layout ---------- */
+.dashboard {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---------- KPI Grid ---------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  animation: fadeInUp 0.5s ease both;
+  cursor: default;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 24px var(--border-glow), 0 0 0 1px var(--border-glow);
+  border-color: var(--border-glow);
+}
+
+.kpi-card__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-card__value {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.kpi-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.kpi-card__sparkline {
+  color: var(--accent-green);
+  flex-shrink: 0;
+}
+
+.kpi-card__delta {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.kpi-card__delta--up {
+  color: var(--accent-coral);
+  background: rgba(255, 71, 87, 0.12);
+}
+
+.kpi-card__delta--down {
+  color: var(--accent-green);
+  background: rgba(0, 255, 135, 0.12);
+}
+
+/* ---------- Panel (shared card wrapper) ---------- */
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  animation: fadeInUp 0.5s ease both;
+}
+
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.panel__title {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- Trend Panel ---------- */
+.trend-panel {
+  animation-delay: 320ms;
+}
+
+.trend-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-deep);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.trend-tabs__btn {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.trend-tabs__btn--active {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.trend-tabs__btn:hover:not(.trend-tabs__btn--active) {
+  color: var(--text-secondary);
+}
+
+.trend-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+
+.trend-chart-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ---------- Charts Row (Services + Donut) ---------- */
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.services-panel {
+  animation-delay: 400ms;
+}
+
+.services-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 320px;
+}
+
+.services-chart-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.donut-panel {
+  animation-delay: 480ms;
+}
+
+.donut-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-chart-wrapper canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* ---------- Heatmap Panel ---------- */
+.heatmap-panel {
+  animation-delay: 560ms;
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: 160px repeat(8, 1fr);
+  gap: 3px;
+}
+
+.heatmap-cell {
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: transform var(--transition), box-shadow var(--transition);
+  cursor: default;
+  position: relative;
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.08);
+  z-index: 2;
+}
+
+/* Heatmap intensity levels */
+.heatmap-cell--low {
+  background: var(--bg-card);
+  color: var(--text-muted);
+}
+
+.heatmap-cell--medium {
+  background: var(--accent-amber);
+  color: var(--bg-deep);
+}
+
+.heatmap-cell--high {
+  background: var(--accent-coral);
+  color: #fff;
+}
+
+/* Heatmap label (service name column) */
+.heatmap-cell--label {
+  justify-content: flex-start;
+  padding-left: 8px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+/* Heatmap header row */
+.heatmap-cell--header {
+  font-family: var(--font-body);
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: transparent;
+}
+
+/* ---------- Budget Panel ---------- */
+.budget-panel {
+  animation-delay: 640ms;
+}
+
+.budget-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.budget-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 140px;
+  align-items: center;
+  gap: 12px;
+}
+
+.budget-row__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.budget-row__bar-track {
+  height: 8px;
+  background: var(--bg-deep);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.budget-row__bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease;
+}
+
+/* Budget bar color states */
+.budget-row__bar-fill--green {
+  background: var(--accent-green);
+}
+
+.budget-row__bar-fill--amber {
+  background: var(--accent-amber);
+}
+
+.budget-row__bar-fill--coral {
+  background: var(--accent-coral);
+}
+
+.budget-row__values {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.budget-row__badge {
+  font-family: var(--font-heading);
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(255, 71, 87, 0.15);
+  color: var(--accent-coral);
+}
+
+/* ---------- Team Cost Table Panel ---------- */
+.table-panel {
+  animation-delay: 720ms;
+}
+
+.table-search {
+  position: relative;
+}
+
+.table-search__input {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  outline: none;
+  width: 220px;
+  transition: border-color var(--transition);
+}
+
+.table-search__input::placeholder {
+  color: var(--text-muted);
+}
+
+.table-search__input:focus {
+  border-color: var(--accent-green);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.team-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.team-table thead {
+  position: sticky;
+  top: 0;
+}
+
+.team-table__th {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color var(--transition);
+}
+
+.team-table__th:hover {
+  color: var(--text-secondary);
+}
+
+.team-table__th[aria-sort="ascending"],
+.team-table__th[aria-sort="descending"] {
+  color: var(--accent-green);
+}
+
+.sort-icon {
+  font-size: 0.625rem;
+  margin-left: 4px;
+  opacity: 0.5;
+}
+
+.team-table__th[aria-sort="ascending"] .sort-icon,
+.team-table__th[aria-sort="descending"] .sort-icon {
+  opacity: 1;
+}
+
+.team-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.team-table tbody tr {
+  transition: background var(--transition);
+}
+
+.team-table tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+/* Numeric columns use monospace */
+.team-table td:nth-child(n+2):nth-child(-n+5) {
+  font-family: var(--font-heading);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+
+  .heatmap-grid {
+    grid-template-columns: 120px repeat(8, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .header__right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dashboard {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .budget-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .budget-row__values {
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .heatmap-grid {
+    grid-template-columns: 100px repeat(8, 1fr);
+    font-size: 0.5rem;
+  }
+
+  .table-search__input {
+    width: 100%;
+  }
+}

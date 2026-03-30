@@ -12,14 +12,14 @@ format:
 unit-testing:
 	uv run pytest --cov=src --cov-report=term-missing
 
-deploy:
-	cd cdk && cdk deploy --all --profile gsti-us
+deploy: install lint unit-testing synth
+	PYTHONPATH=. cdk deploy --all --profile gsti-us --app "python cdk/app.py"
 
 bootstrap:
-	cd cdk && cdk bootstrap --profile gsti-us
+	PYTHONPATH=. cdk bootstrap --profile gsti-us --app "python cdk/app.py"
 
 synth:
-	cd cdk && cdk synth
+	PYTHONPATH=. cdk synth --app "python cdk/app.py"
 
 diff:
-	cd cdk && cdk diff --profile gsti-us
+	PYTHONPATH=. cdk diff --profile gsti-us --app "python cdk/app.py"

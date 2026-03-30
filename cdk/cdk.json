@@ -1,0 +1,3 @@
+{
+  "app": "PYTHONPATH=. python cdk/app.py"
+}

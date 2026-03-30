@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock
 
-from src.utils.aws_client import get_ce_client, get_dynamodb_resource, get_ssm_client
+from utils.aws_client import get_ce_client, get_dynamodb_resource, get_ssm_client
 
 
 class TestGetDynamodbResource:

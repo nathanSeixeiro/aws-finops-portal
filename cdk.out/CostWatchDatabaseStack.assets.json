@@ -1,0 +1,19 @@
+{
+  "version": "38.0.1",
+  "files": {
+    "23fafd9652d42d3c2ceaa301f43be7df31bfd0904bbae8c26b115b2e60a87b78": {
+      "source": {
+        "path": "CostWatchDatabaseStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "23fafd9652d42d3c2ceaa301f43be7df31bfd0904bbae8c26b115b2e60a87b78.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from src.models.service_breakdown import ServiceBreakdown
+from models.service_breakdown import ServiceBreakdown
 
 
 def _make_breakdown(**overrides) -> ServiceBreakdown:

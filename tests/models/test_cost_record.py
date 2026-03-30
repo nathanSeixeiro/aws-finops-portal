@@ -5,7 +5,7 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
-from src.models.cost_record import CostRecord
+from models.cost_record import CostRecord
 
 
 def _make_cost_record(**overrides) -> CostRecord:

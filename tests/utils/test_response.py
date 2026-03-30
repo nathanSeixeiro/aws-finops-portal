@@ -3,7 +3,7 @@
 import json
 from decimal import Decimal
 
-from src.utils.response import error, success
+from utils.response import error, success
 
 
 class TestSuccess:

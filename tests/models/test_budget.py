@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from src.models.budget import Budget
+from models.budget import Budget
 
 
 def _make_budget(**overrides) -> Budget:
