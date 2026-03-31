@@ -118,7 +118,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07.zip"
+     "S3Key": "0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68.zip"
     },
     "Environment": {
      "Variables": {
@@ -128,7 +128,8 @@
       "BUDGETS_TABLE": {
        "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputRefBudgetsTable6D971670DE86C705"
       },
-      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate"
+      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate",
+      "API_KEY": "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g"
      }
     },
     "Handler": "handlers.ingest_costs.handler",
@@ -147,7 +148,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/IngestCostsFunction/Resource",
-    "aws:asset:path": "asset.abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07",
+    "aws:asset:path": "asset.0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -271,7 +272,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07.zip"
+     "S3Key": "0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68.zip"
     },
     "Environment": {
      "Variables": {
@@ -281,7 +282,8 @@
       "BUDGETS_TABLE": {
        "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputRefBudgetsTable6D971670DE86C705"
       },
-      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate"
+      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate",
+      "API_KEY": "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g"
      }
     },
     "Handler": "handlers.get_summary.handler",
@@ -300,7 +302,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/GetSummaryFunction/Resource",
-    "aws:asset:path": "asset.abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07",
+    "aws:asset:path": "asset.0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -424,7 +426,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07.zip"
+     "S3Key": "0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68.zip"
     },
     "Environment": {
      "Variables": {
@@ -434,7 +436,8 @@
       "BUDGETS_TABLE": {
        "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputRefBudgetsTable6D971670DE86C705"
       },
-      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate"
+      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate",
+      "API_KEY": "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g"
      }
     },
     "Handler": "handlers.get_service_breakdown.handler",
@@ -453,7 +456,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/GetServiceBreakdownFunction/Resource",
-    "aws:asset:path": "asset.abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07",
+    "aws:asset:path": "asset.0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -577,7 +580,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07.zip"
+     "S3Key": "0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68.zip"
     },
     "Environment": {
      "Variables": {
@@ -587,7 +590,8 @@
       "BUDGETS_TABLE": {
        "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputRefBudgetsTable6D971670DE86C705"
       },
-      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate"
+      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate",
+      "API_KEY": "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g"
      }
     },
     "Handler": "handlers.get_trend.handler",
@@ -606,7 +610,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/GetTrendFunction/Resource",
-    "aws:asset:path": "asset.abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07",
+    "aws:asset:path": "asset.0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -730,7 +734,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07.zip"
+     "S3Key": "0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68.zip"
     },
     "Environment": {
      "Variables": {
@@ -740,7 +744,8 @@
       "BUDGETS_TABLE": {
        "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputRefBudgetsTable6D971670DE86C705"
       },
-      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate"
+      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate",
+      "API_KEY": "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g"
      }
     },
     "Handler": "handlers.get_forecast.handler",
@@ -759,7 +764,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/GetForecastFunction/Resource",
-    "aws:asset:path": "asset.abcbe0c8621517997ed7abda208fe118eab96805e441d6247e890ab60b422f07",
+    "aws:asset:path": "asset.0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -784,6 +789,160 @@
    "DeletionPolicy": "Retain",
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/GetForecastFunctionLogGroup/Resource"
+   }
+  },
+  "GetAccountsFunctionServiceRole5443B61E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/GetAccountsFunction/ServiceRole/Resource"
+   }
+  },
+  "GetAccountsFunctionServiceRoleDefaultPolicy777F7C81": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:Query"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputFnGetAttCostRecordsTable6EA6E90CArn21AD211C"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputFnGetAttCostRecordsTable6EA6E90CArn21AD211C"
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputFnGetAttBudgetsTable6D971670Arn64554516"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputFnGetAttBudgetsTable6D971670Arn64554516"
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GetAccountsFunctionServiceRoleDefaultPolicy777F7C81",
+    "Roles": [
+     {
+      "Ref": "GetAccountsFunctionServiceRole5443B61E"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/GetAccountsFunction/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "GetAccountsFunctionBAE46E0C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "COST_RECORDS_TABLE": {
+       "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputRefCostRecordsTable6EA6E90CFE579D94"
+      },
+      "BUDGETS_TABLE": {
+       "Fn::ImportValue": "CostWatchDatabaseStack:ExportsOutputRefBudgetsTable6D971670DE86C705"
+      },
+      "SSM_BRL_RATE_PATH": "/costwatch/brl-exchange-rate",
+      "API_KEY": "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g"
+     }
+    },
+    "Handler": "handlers.get_accounts.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GetAccountsFunctionServiceRole5443B61E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GetAccountsFunctionServiceRoleDefaultPolicy777F7C81",
+    "GetAccountsFunctionServiceRole5443B61E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/GetAccountsFunction/Resource",
+    "aws:asset:path": "asset.0a8db771f1a6f226c62b20d1410ee83d8caa5369ad2dfea9bbdc071978e7cb68",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetAccountsFunctionLogGroup680F4746": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "GetAccountsFunctionBAE46E0C"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/GetAccountsFunctionLogGroup/Resource"
    }
   },
   "CostWatchApi9F0B7CE2": {
@@ -850,7 +1009,7 @@
     "aws:cdk:path": "CostWatchApiStack/CostWatchApi/Account"
    }
   },
-  "CostWatchApiDeployment707CC75Bb4642316e5c5c31b8278f94eee06f151": {
+  "CostWatchApiDeployment707CC75B182fcaf3acfdb3aac71416b56b3852cd": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -859,6 +1018,9 @@
     }
    },
    "DependsOn": [
+    "CostWatchApiaccountsGET3159A4AB",
+    "CostWatchApiaccountsOPTIONSC5B60A17",
+    "CostWatchApiaccounts20557C02",
     "CostWatchApiforecastGETF5F70C09",
     "CostWatchApiforecastOPTIONSA7DA7D98",
     "CostWatchApiforecastD1CD00EE",
@@ -881,7 +1043,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "CostWatchApiDeployment707CC75Bb4642316e5c5c31b8278f94eee06f151"
+     "Ref": "CostWatchApiDeployment707CC75B182fcaf3acfdb3aac71416b56b3852cd"
     },
     "RestApiId": {
      "Ref": "CostWatchApi9F0B7CE2"
@@ -1720,6 +1882,200 @@
    },
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/CostWatchApi/Default/forecast/GET/Resource"
+   }
+  },
+  "CostWatchApiaccounts20557C02": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "CostWatchApi9F0B7CE2",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "accounts",
+    "RestApiId": {
+     "Ref": "CostWatchApi9F0B7CE2"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/CostWatchApi/Default/accounts/Resource"
+   }
+  },
+  "CostWatchApiaccountsOPTIONSC5B60A17": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,x-api-key'",
+        "method.response.header.Access-Control-Allow-Origin": "'http://localhost:5500'",
+        "method.response.header.Vary": "'Origin'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "ResponseTemplates": {
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"http://127.0.0.1:5500\" || $origin == \"http://localhost:3000\" || $origin == \"http://127.0.0.1:3000\" || $origin == \"http://localhost:8080\" || $origin == \"http://127.0.0.1:8080\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Vary": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "CostWatchApiaccounts20557C02"
+    },
+    "RestApiId": {
+     "Ref": "CostWatchApi9F0B7CE2"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/CostWatchApi/Default/accounts/OPTIONS/Resource"
+   }
+  },
+  "CostWatchApiaccountsGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETaccountsE5D8933C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetAccountsFunctionBAE46E0C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CostWatchApi9F0B7CE2"
+       },
+       "/",
+       {
+        "Ref": "CostWatchApiDeploymentStageprod5359DAAA"
+       },
+       "/GET/accounts"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/CostWatchApi/Default/accounts/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..accounts"
+   }
+  },
+  "CostWatchApiaccountsGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETaccounts8D856F1B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetAccountsFunctionBAE46E0C",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "CostWatchApi9F0B7CE2"
+       },
+       "/test-invoke-stage/GET/accounts"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/CostWatchApi/Default/accounts/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..accounts"
+   }
+  },
+  "CostWatchApiaccountsGET3159A4AB": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": true,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "GetAccountsFunctionBAE46E0C",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "CostWatchApiaccounts20557C02"
+    },
+    "RestApiId": {
+     "Ref": "CostWatchApi9F0B7CE2"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CostWatchApiStack/CostWatchApi/Default/accounts/GET/Resource"
    }
   },
   "CostWatchApiCostWatchApiKey1B952D3A": {

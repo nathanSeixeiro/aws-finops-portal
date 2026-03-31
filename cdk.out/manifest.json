@@ -156,7 +156,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/79bdab827396cc7e84065e8080b19eba14fd127360e3ae340521a96390b0171e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e818e780c23a182d8343de121aa07c2fa0668d7f825d5bd29066972cd2f356d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -293,6 +293,30 @@
             "data": "GetForecastFunctionLogGroupFAF4388A"
           }
         ],
+        "/CostWatchApiStack/GetAccountsFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAccountsFunctionServiceRole5443B61E"
+          }
+        ],
+        "/CostWatchApiStack/GetAccountsFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAccountsFunctionServiceRoleDefaultPolicy777F7C81"
+          }
+        ],
+        "/CostWatchApiStack/GetAccountsFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAccountsFunctionBAE46E0C"
+          }
+        ],
+        "/CostWatchApiStack/GetAccountsFunctionLogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAccountsFunctionLogGroup680F4746"
+          }
+        ],
         "/CostWatchApiStack/CostWatchApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -314,7 +338,7 @@
         "/CostWatchApiStack/CostWatchApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiDeployment707CC75Bb4642316e5c5c31b8278f94eee06f151"
+            "data": "CostWatchApiDeployment707CC75B182fcaf3acfdb3aac71416b56b3852cd"
           }
         ],
         "/CostWatchApiStack/CostWatchApi/DeploymentStage.prod/Resource": [
@@ -453,6 +477,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CostWatchApiforecastGETF5F70C09"
+          }
+        ],
+        "/CostWatchApiStack/CostWatchApi/Default/accounts/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CostWatchApiaccounts20557C02"
+          }
+        ],
+        "/CostWatchApiStack/CostWatchApi/Default/accounts/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CostWatchApiaccountsOPTIONSC5B60A17"
+          }
+        ],
+        "/CostWatchApiStack/CostWatchApi/Default/accounts/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..accounts": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CostWatchApiaccountsGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETaccountsE5D8933C"
+          }
+        ],
+        "/CostWatchApiStack/CostWatchApi/Default/accounts/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..accounts": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CostWatchApiaccountsGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETaccounts8D856F1B"
+          }
+        ],
+        "/CostWatchApiStack/CostWatchApi/Default/accounts/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CostWatchApiaccountsGET3159A4AB"
           }
         ],
         "/CostWatchApiStack/CostWatchApi/CostWatchApiKey/Resource": [

@@ -131,3 +131,30 @@ class CostQueryService:
                 "total_brl": total_brl,
             })
         return trend
+
+    def get_account_breakdown(self, granularity: str, period: str) -> list[dict]:
+        """Aggregate costs by account_id for a given granularity and period."""
+        records = self._cost_repo.query_by_gran_period(granularity, period)
+        agg: dict[str, dict] = {}
+        for r in records:
+            aid = r.account_id or "unknown"
+            if aid not in agg:
+                agg[aid] = {"usd": Decimal("0"), "brl": Decimal("0")}
+            agg[aid]["usd"] += r.amount_usd
+            agg[aid]["brl"] += r.amount_brl
+
+        total_usd = sum(v["usd"] for v in agg.values())
+        result = []
+        for acct, amounts in agg.items():
+            pct = (
+                (amounts["usd"] / total_usd * 100).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                if total_usd > 0 else Decimal("0")
+            )
+            result.append({
+                "account_id": acct,
+                "amount_usd": amounts["usd"],
+                "amount_brl": amounts["brl"],
+                "percentage_of_total": pct,
+            })
+        result.sort(key=lambda x: x["amount_usd"], reverse=True)
+        return result

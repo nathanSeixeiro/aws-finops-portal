@@ -136,44 +136,25 @@
         <h2 class="panel__title">Service Heatmap</h2>
       </div>
       <div class="heatmap-grid" id="heatmapGrid" role="grid" aria-label="Service cost heatmap grid">
-        <!-- Populated by app.js: rows = top 10 services, columns = last 8 periods -->
       </div>
     </section>
 
-    <!-- ===== BUDGET TRACKER ===== -->
-    <section class="panel budget-panel" aria-label="Budget tracker">
+    <!-- ===== ACCOUNT COSTS TABLE ===== -->
+    <section class="panel" aria-label="Cost per account">
       <div class="panel__header">
-        <h2 class="panel__title">Budget Tracker</h2>
-      </div>
-      <div class="budget-list" id="budgetList">
-        <!-- Populated by app.js: one row per account/team with progress bar -->
-      </div>
-    </section>
-
-    <!-- ===== TEAM COST TABLE ===== -->
-    <section class="panel table-panel" aria-label="Team cost breakdown">
-      <div class="panel__header">
-        <h2 class="panel__title">Team Costs</h2>
-        <div class="table-search">
-          <label for="teamSearch" class="sr-only">Search teams</label>
-          <input type="search" id="teamSearch" class="table-search__input" placeholder="Search teams…" aria-label="Search teams">
-        </div>
+        <h2 class="panel__title">Cost per Account</h2>
       </div>
       <div class="table-wrapper">
-        <table class="team-table" id="teamTable">
+        <table class="team-table" id="accountTable">
           <thead>
             <tr>
-              <th class="team-table__th" data-sort="team" aria-sort="none">Team <span class="sort-icon" aria-hidden="true">⇅</span></th>
-              <th class="team-table__th" data-sort="daily" aria-sort="none">Daily Avg <span class="sort-icon" aria-hidden="true">⇅</span></th>
-              <th class="team-table__th" data-sort="weekly" aria-sort="none">Weekly Total <span class="sort-icon" aria-hidden="true">⇅</span></th>
-              <th class="team-table__th" data-sort="monthly" aria-sort="none">Monthly Total <span class="sort-icon" aria-hidden="true">⇅</span></th>
-              <th class="team-table__th" data-sort="pct" aria-sort="none">% of Total <span class="sort-icon" aria-hidden="true">⇅</span></th>
-              <th class="team-table__th">Trend</th>
+              <th class="team-table__th">Account</th>
+              <th class="team-table__th">ID</th>
+              <th class="team-table__th">Cost</th>
+              <th class="team-table__th">% of Total</th>
             </tr>
           </thead>
-          <tbody id="teamTableBody">
-            <!-- Populated by app.js -->
-          </tbody>
+          <tbody id="accountTableBody"></tbody>
         </table>
       </div>
     </section>

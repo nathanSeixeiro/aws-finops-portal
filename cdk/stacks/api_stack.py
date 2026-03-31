@@ -122,6 +122,11 @@ class ApiStack(Stack):
             "handlers.get_forecast.handler",
         )
 
+        self.get_accounts_fn = _make_lambda(
+            "GetAccountsFunction",
+            "handlers.get_accounts.handler",
+        )
+
         # ── IAM: Ingestion Lambda ─────────────────────────────────────
         cost_records_table.grant_write_data(self.ingest_costs_fn)
         self.ingest_costs_fn.add_to_role_policy(
@@ -162,6 +167,7 @@ class ApiStack(Stack):
             self.get_service_breakdown_fn,
             self.get_trend_fn,
             self.get_forecast_fn,
+            self.get_accounts_fn,
         ]:
             fn.add_to_role_policy(query_read_policy)
 
@@ -213,5 +219,12 @@ class ApiStack(Stack):
         forecast_resource.add_method(
             "GET",
             apigw.LambdaIntegration(self.get_forecast_fn),
+            api_key_required=True,
+        )
+
+        accounts_resource = api.root.add_resource("accounts")
+        accounts_resource.add_method(
+            "GET",
+            apigw.LambdaIntegration(self.get_accounts_fn),
             api_key_required=True,
         )

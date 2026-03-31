@@ -72,6 +72,33 @@ class CostIngestionService:
 
         return {"status": "ok", "records": len(costs)}
 
+    def ingest_day(self, day: str) -> dict:
+        """Ingest a specific day's cost data (for backfill)."""
+        granularity = "DAILY"
+        try:
+            rate = self._currency_svc.get_exchange_rate()
+            costs = self._fetch_costs(granularity, day, day)
+        except Exception:
+            logger.error("Failed to ingest DAILY costs for %s", day, exc_info=True)
+            return {"status": "error", "records": 0}
+
+        now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        ttl = self._compute_ttl(granularity)
+
+        for record in costs:
+            record.amount_brl = self._currency_svc.convert(record.amount_usd, rate)
+            record.exchange_rate = rate
+            record.ingested_at = now
+            record.ttl = ttl
+            record.period = day
+            record.period_end = day
+            record.granularity = granularity
+            record.pk = f"ACCOUNT#{record.account_id}#GRAN#{granularity}#PERIOD#{day}"
+            record.sk = f"SERVICE#{record.service_name}"
+            self._cost_repo.put(record)
+
+        return {"status": "ok", "records": len(costs)}
+
     # ------------------------------------------------------------------
     # Private helpers
     # ------------------------------------------------------------------
@@ -128,13 +155,17 @@ class CostIngestionService:
             TimePeriod={"Start": ce_start, "End": ce_end},
             Granularity=granularity if granularity != "WEEKLY" else "DAILY",
             Metrics=["UnblendedCost"],
-            GroupBy=[{"Type": "DIMENSION", "Key": "SERVICE"}],
+            GroupBy=[
+                {"Type": "DIMENSION", "Key": "SERVICE"},
+                {"Type": "DIMENSION", "Key": "LINKED_ACCOUNT"},
+            ],
         )
 
         records: list[CostRecord] = []
         for result_by_time in resp.get("ResultsByTime", []):
             for group in result_by_time.get("Groups", []):
                 service_name = group["Keys"][0]
+                account_id = group["Keys"][1] if len(group["Keys"]) > 1 else "default"
                 amount_str = group["Metrics"]["UnblendedCost"]["Amount"]
                 amount_usd = Decimal(amount_str).quantize(Decimal("0.0001"))
 
@@ -142,8 +173,8 @@ class CostIngestionService:
                     CostRecord(
                         pk="",  # filled by caller
                         sk="",  # filled by caller
-                        account_id="default",
-                        account_alias="default",
+                        account_id=account_id,
+                        account_alias=account_id,
                         period=period_start,
                         period_end=period_end,
                         granularity=granularity,
