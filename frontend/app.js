@@ -149,12 +149,16 @@ function aggregateToWeeks(dailyItems) {
 function renderTrendChart(granularity) {
   let items;
   if (granularity === "DAILY") {
-    items = dashboardData?.daily_trend || [];
+    // Exclude today (incomplete data makes graph look like it's dropping)
+    const today = new Date().toISOString().slice(0, 10);
+    items = (dashboardData?.daily_trend || []).filter(d => d.period !== today);
   } else if (granularity === "WEEKLY") {
-    // Aggregate daily data into ISO weeks
-    items = aggregateToWeeks(dashboardData?.daily_trend || []);
+    const today = new Date().toISOString().slice(0, 10);
+    items = aggregateToWeeks((dashboardData?.daily_trend || []).filter(d => d.period !== today));
   } else {
-    items = dashboardData?.monthly_trend || [];
+    // Exclude current month (incomplete data)
+    const curMonth = new Date().toISOString().slice(0, 7);
+    items = (dashboardData?.monthly_trend || []).filter(d => d.period !== curMonth);
   }
   const labels = items.map((d) => d.period);
   const values = items.map((d) => Number(d[totalKey()] ?? 0));
@@ -360,6 +364,15 @@ document.querySelectorAll(".trend-tabs__btn").forEach((btn) => {
   });
 });
 
+// ---------- Month name helper ----------
+function prevMonthLabel() {
+  const pm = dashboardData?.prev_month;
+  if (!pm) return "";
+  const [y, m] = pm.split("-");
+  const name = new Date(Number(y), Number(m) - 1).toLocaleString("en-US", { month: "long" });
+  return `${name} ${y}`;
+}
+
 // ---------- Render All (from cached data) ----------
 function renderAll() {
   if (!dashboardData) return;
@@ -369,6 +382,17 @@ function renderAll() {
   renderAccountDonut();
   renderAccountTable();
   renderHeatmap();
+
+  // Update section titles with previous month name
+  const label = prevMonthLabel();
+  if (label) {
+    document.querySelectorAll(".panel__title").forEach(el => {
+      if (el.textContent.startsWith("Top 10 Services")) el.textContent = `Top 10 Services (${label})`;
+      if (el.textContent.startsWith("Account Breakdown")) el.textContent = `Account Breakdown (${label})`;
+      if (el.textContent.startsWith("Service Heatmap")) el.textContent = `Service Heatmap (${label})`;
+      if (el.textContent.startsWith("Cost per Account")) el.textContent = `Cost per Account (${label})`;
+    });
+  }
 }
 
 // ---------- Init ----------

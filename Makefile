@@ -1,4 +1,4 @@
-.PHONY: deploy unit-testing lint format install bootstrap synth diff destroy
+.PHONY: deploy unit-testing lint format install bootstrap synth diff
 
 install:
 	uv sync

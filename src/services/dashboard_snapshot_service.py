@@ -135,18 +135,20 @@ class DashboardSnapshotService:
             t = monthly_by_period.get(p, {"usd": Decimal("0"), "brl": Decimal("0")})
             monthly_trend.append({"period": p, "total_usd": t["usd"], "total_brl": t["brl"]})
 
-        # --- Services breakdown (yesterday) ---
-        yesterday_records = self._cost_repo.query_by_gran_period("DAILY", yesterday)
-        services = self._aggregate_by_service(yesterday_records)
+        # --- Services breakdown (previous month) ---
+        prev_month_services = self._aggregate_by_service(prev_records)
 
-        # --- Accounts breakdown (yesterday) ---
-        accounts = self._aggregate_by_account(yesterday_records)
+        # --- Accounts breakdown (previous month) ---
+        prev_month_accounts = self._aggregate_by_account(prev_records)
 
-        # --- Heatmap: last 8 days of service data ---
+        # --- Heatmap: last 8 days of previous month ---
+        prev_year, prev_mo = int(prev_month[:4]), int(prev_month[5:7])
+        prev_last_day = calendar.monthrange(prev_year, prev_mo)[1]
         heatmap_periods = []
-        for i in range(8, 0, -1):
-            d = today - datetime.timedelta(days=i)
-            heatmap_periods.append(d.isoformat())
+        for i in range(7, -1, -1):
+            d = prev_last_day - i
+            if d >= 1:
+                heatmap_periods.append(f"{prev_month}-{d:02d}")
 
         heatmap_records = self._cost_repo.query_by_gran_period_range(
             "DAILY", heatmap_periods[0], heatmap_periods[-1]
@@ -169,10 +171,11 @@ class DashboardSnapshotService:
                 "forecast_method": "linear_projection",
                 "forecast_confidence": confidence,
             },
+            "prev_month": prev_month,
             "daily_trend": daily_trend,
             "monthly_trend": monthly_trend,
-            "services": services,
-            "accounts": accounts,
+            "services": prev_month_services,
+            "accounts": prev_month_accounts,
             "heatmap": heatmap,
         }
 
