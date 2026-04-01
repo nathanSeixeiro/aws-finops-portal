@@ -31,7 +31,6 @@ src/
     cost_record_repository.py    # DynamoDB queries for cost records
   models/
     cost_record.py           # Pydantic v2 model for cost records
-    budget.py                # Pydantic v2 model for budgets
   utils/
     auth.py                  # API key validation
     aws_client.py            # boto3 client factory with dependency injection
@@ -103,7 +102,7 @@ This runs: install → lint → test → synth → deploy. Three CloudFormation 
 
 | Stack | Resources |
 |-------|-----------|
-| CostWatchDatabaseStack | DynamoDB tables (cost-records, budgets) + GSIs |
+| CostWatchDatabaseStack | DynamoDB table (cost-records) + GSIs |
 | CostWatchApiStack | API Gateway, 2 Lambdas (ingest + dashboard), IAM roles |
 | CostWatchSchedulerStack | EventBridge rules (daily 2AM, weekly Mon 3AM, monthly 1st 4AM UTC) |
 

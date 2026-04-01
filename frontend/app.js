@@ -475,14 +475,6 @@ async function fetchAllocation(window = "7d", aggregate = "namespace") {
   return fetchKubecostEndpoint("/model/allocation", { window, aggregate });
 }
 
-async function fetchAssets(window = "7d") {
-  return fetchKubecostEndpoint("/model/assets", { window });
-}
-
-async function fetchSavings() {
-  return fetchKubecostEndpoint("/model/savings");
-}
-
 // ---------- Kubecost Data Normalization ----------
 function normalizeClusterCosts(raw) {
   if (!raw || !raw.data) return {};
@@ -546,38 +538,6 @@ function normalizeAllocation(raw) {
     }
   }
   return Object.values(nsMap).sort((a, b) => b.totalCost - a.totalCost);
-}
-
-function normalizeSavings(raw) {
-  if (!raw || !raw.data) return { totalMonthlySavings: 0, recommendations: [] };
-  const data = raw.data;
-
-  // Savings API returns category objects with savingsPerMonth, not a recommendations array
-  const categoryLabels = {
-    abandonedWorkloads: "Abandoned workloads",
-    nodeGroupSizing: "Node group right-sizing",
-    orphanedResources: "Orphaned resources",
-    underutilizedLocalDisks: "Underutilized local disks",
-    persistentVolumeSizing: "Persistent volume right-sizing",
-    unclaimedVolumes: "Unclaimed volumes",
-    containerRequestSizing: "Container request right-sizing",
-  };
-
-  const recs = [];
-  let totalMonthlySavings = 0;
-
-  for (const [key, label] of Object.entries(categoryLabels)) {
-    const cat = data[key];
-    if (cat && typeof cat.savingsPerMonth === "number") {
-      totalMonthlySavings += cat.savingsPerMonth;
-      if (cat.savingsPerMonth > 0) {
-        recs.push({ type: key, description: label, monthlySavings: cat.savingsPerMonth });
-      }
-    }
-  }
-
-  recs.sort((a, b) => b.monthlySavings - a.monthlySavings);
-  return { totalMonthlySavings, recommendations: recs };
 }
 
 function computeTotals(clusterCosts) {
@@ -824,57 +784,6 @@ function renderNamespaceChart(allocation) {
 }
 
 // ---------- Efficiency Panel ----------
-function renderEfficiencyPanel(clusterCosts) {
-  const panel = document.getElementById("k8sEfficiencyPanel");
-  if (!panel) return;
-  const content = panel.querySelector(".efficiency-panel-content");
-  if (!content) return;
-
-  if (!clusterCosts || !Object.keys(clusterCosts).length) {
-    showPanelUnavailable(panel);
-    return;
-  }
-  hidePanelUnavailable(panel);
-
-  const totals = computeTotals(clusterCosts);
-  const sorted = Object.entries(clusterCosts).sort((a, b) => b[1].totalCost - a[1].totalCost);
-
-  function gaugeColor(pct) {
-    if (pct > 60) return "green";
-    if (pct >= 30) return "amber";
-    return "coral";
-  }
-
-  function gaugeHTML(label, value) {
-    const pct = (value * 100).toFixed(1);
-    const color = gaugeColor(parseFloat(pct));
-    return `
-      <div class="efficiency-gauge efficiency-gauge--${color}">
-        <div class="efficiency-gauge__label">
-          <span>${label}</span>
-          <span>${pct}%</span>
-        </div>
-        <div class="efficiency-gauge__track">
-          <div class="efficiency-gauge__fill" style="width:${Math.min(parseFloat(pct), 100)}%"></div>
-        </div>
-      </div>`;
-  }
-
-  let html = `<div class="efficiency-cluster">
-    <span class="efficiency-cluster__name" style="font-family:var(--font-heading);font-size:1.25rem;color:var(--accent-green);">Overall: ${(totals.overallEfficiency * 100).toFixed(1)}%</span>
-  </div>`;
-
-  for (const [name, c] of sorted) {
-    html += `<div class="efficiency-cluster">
-      <span class="efficiency-cluster__name">${name}</span>
-      ${gaugeHTML("CPU", c.cpuEfficiency)}
-      ${gaugeHTML("Memory", c.memoryEfficiency)}
-    </div>`;
-  }
-
-  content.innerHTML = html;
-}
-
 // ---------- Network Costs Panel ----------
 function renderNetworkCosts(allocation) {
   const panel = document.getElementById("k8sNetworkPanel");
@@ -900,34 +809,6 @@ function renderNetworkCosts(allocation) {
       <span class="network-costs-item__label">${item.label}</span>
       <span class="network-costs-item__value">${fmtK8s(item.value)}</span>
     </div>`).join("");
-}
-
-// ---------- Savings Recommendations Panel ----------
-function renderSavingsPanel(savings) {
-  const panel = document.getElementById("k8sSavingsPanel");
-  if (!panel) return;
-  const list = panel.querySelector(".savings-list");
-  if (!list) return;
-
-  if (!savings || (!savings.totalMonthlySavings && !savings.recommendations.length)) {
-    showPanelUnavailable(panel);
-    return;
-  }
-  hidePanelUnavailable(panel);
-
-  const totalHtml = `<div class="savings-item" style="background:var(--bg-card-hover);">
-    <span class="savings-item__description" style="font-weight:700;">Total Potential Monthly Savings</span>
-    <span class="savings-item__amount" style="font-size:1.1rem;">${fmtK8s(savings.totalMonthlySavings)}</span>
-  </div>`;
-
-  const recsHtml = savings.recommendations
-    .sort((a, b) => b.monthlySavings - a.monthlySavings)
-    .map((r) => `<div class="savings-item">
-      <span class="savings-item__description">${r.description}</span>
-      <span class="savings-item__amount">${fmtK8s(r.monthlySavings)}/mo</span>
-    </div>`).join("");
-
-  list.innerHTML = totalHtml + recsHtml;
 }
 
 // ============================================================
@@ -974,10 +855,9 @@ function renderAllKubecost() {
 async function initKubecost() {
   showKubecostLoading();
 
-  const [clusterRes, allocRes, assetsRes] = await Promise.allSettled([
+  const [clusterRes, allocRes] = await Promise.allSettled([
     fetchClusterCosts(kubecostWindow),
     fetchAllocation(kubecostWindow, "namespace"),
-    fetchAssets(kubecostWindow),
   ]);
 
   const clusterRaw = clusterRes.status === "fulfilled" ? clusterRes.value : null;

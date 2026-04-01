@@ -54,14 +54,11 @@ class ApiStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         cost_records_table = database_stack.cost_records_table
-        # Keep budgets_table reference to avoid breaking cross-stack export
-        budgets_table = database_stack.budgets_table  # noqa: F841
 
         api_key_value = "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g"
 
         common_env = {
             "COST_RECORDS_TABLE": cost_records_table.table_name,
-            "BUDGETS_TABLE": budgets_table.table_name,
             "SSM_BRL_RATE_PATH": self.SSM_BRL_RATE_PATH,
             "API_KEY": api_key_value,
         }

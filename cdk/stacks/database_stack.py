@@ -8,7 +8,7 @@ from constructs import Construct
 
 
 class DatabaseStack(Stack):
-    """CDK stack that provisions the two DynamoDB tables for CostWatch."""
+    """CDK stack that provisions the DynamoDB table for CostWatch."""
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -48,20 +48,6 @@ class DatabaseStack(Stack):
             sort_key=dynamodb.Attribute(name="account_gran_sk", type=dynamodb.AttributeType.STRING),
         )
 
-        # ── costwatch-budgets table ───────────────────────────────────
-        self.budgets_table = dynamodb.Table(
-            self,
-            "BudgetsTable",
-            table_name="costwatch-budgets",
-            partition_key=dynamodb.Attribute(name="pk", type=dynamodb.AttributeType.STRING),
-            sort_key=dynamodb.Attribute(name="sk", type=dynamodb.AttributeType.STRING),
-            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-            encryption=dynamodb.TableEncryption.AWS_MANAGED,
-            removal_policy=RemovalPolicy.DESTROY,
-        )
-
         # ── CloudFormation outputs ────────────────────────────────────
         CfnOutput(self, "CostRecordsTableName", value=self.cost_records_table.table_name)
         CfnOutput(self, "CostRecordsTableArn", value=self.cost_records_table.table_arn)
-        CfnOutput(self, "BudgetsTableName", value=self.budgets_table.table_name)
-        CfnOutput(self, "BudgetsTableArn", value=self.budgets_table.table_arn)

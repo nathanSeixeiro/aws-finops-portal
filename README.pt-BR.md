@@ -31,7 +31,6 @@ src/
     cost_record_repository.py    # Queries DynamoDB para registros de custo
   models/
     cost_record.py               # Modelo Pydantic v2 para registros de custo
-    budget.py                    # Modelo Pydantic v2 para orçamentos
   utils/
     auth.py                      # Validação de API key
     aws_client.py                # Factory de clientes boto3 com injeção de dependência
@@ -103,7 +102,7 @@ Executa: install → lint → test → synth → deploy. Três stacks CloudForma
 
 | Stack | Recursos |
 |-------|----------|
-| CostWatchDatabaseStack | Tabelas DynamoDB (cost-records, budgets) + GSIs |
+| CostWatchDatabaseStack | Tabela DynamoDB (cost-records) + GSIs |
 | CostWatchApiStack | API Gateway, 2 Lambdas (ingestão + dashboard), roles IAM |
 | CostWatchSchedulerStack | Regras EventBridge (diário 2h, semanal seg 3h, mensal dia 1 4h UTC) |
 

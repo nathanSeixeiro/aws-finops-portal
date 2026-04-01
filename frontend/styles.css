@@ -438,82 +438,6 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
 }
 
-/* ---------- Budget Panel ---------- */
-.budget-panel {
-  animation-delay: 640ms;
-}
-
-.budget-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.budget-row {
-  display: grid;
-  grid-template-columns: 160px 1fr 140px;
-  align-items: center;
-  gap: 12px;
-}
-
-.budget-row__label {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.budget-row__bar-track {
-  height: 8px;
-  background: var(--bg-deep);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.budget-row__bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.8s ease;
-}
-
-/* Budget bar color states */
-.budget-row__bar-fill--green {
-  background: var(--accent-green);
-}
-
-.budget-row__bar-fill--amber {
-  background: var(--accent-amber);
-}
-
-.budget-row__bar-fill--coral {
-  background: var(--accent-coral);
-}
-
-.budget-row__values {
-  font-family: var(--font-heading);
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-align: right;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.budget-row__badge {
-  font-family: var(--font-heading);
-  font-size: 0.625rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  background: rgba(255, 71, 87, 0.15);
-  color: var(--accent-coral);
-}
-
 /* ---------- Team Cost Table Panel ---------- */
 .table-panel {
   animation-delay: 720ms;
@@ -650,16 +574,6 @@ h1, h2, h3, h4, h5, h6 {
 
   .kpi-grid {
     grid-template-columns: 1fr;
-  }
-
-  .budget-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .budget-row__values {
-    text-align: left;
-    justify-content: flex-start;
   }
 
   .heatmap-grid {
