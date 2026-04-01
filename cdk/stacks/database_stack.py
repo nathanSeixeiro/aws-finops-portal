@@ -24,7 +24,7 @@ class DatabaseStack(Stack):
             encryption=dynamodb.TableEncryption.AWS_MANAGED,
             point_in_time_recovery=True,
             time_to_live_attribute="ttl",
-            removal_policy=RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.DESTROY,
         )
 
         # GSI: gsi-gran-period
@@ -57,7 +57,7 @@ class DatabaseStack(Stack):
             sort_key=dynamodb.Attribute(name="sk", type=dynamodb.AttributeType.STRING),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             encryption=dynamodb.TableEncryption.AWS_MANAGED,
-            removal_policy=RemovalPolicy.RETAIN,
+            removal_policy=RemovalPolicy.DESTROY,
         )
 
         # ── CloudFormation outputs ────────────────────────────────────

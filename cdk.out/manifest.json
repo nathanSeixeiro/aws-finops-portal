@@ -19,7 +19,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23fafd9652d42d3c2ceaa301f43be7df31bfd0904bbae8c26b115b2e60a87b78.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bacf4a694a6b40ecae443295b50b4e3111d90f24568d5a9e41c5df88836f6445.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -117,12 +117,6 @@
             "data": "ExportsOutputRefBudgetsTable6D971670DE86C705"
           }
         ],
-        "/CostWatchDatabaseStack/Exports/Output{\"Fn::GetAtt\":[\"BudgetsTable6D971670\",\"Arn\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttBudgetsTable6D971670Arn64554516"
-          }
-        ],
         "/CostWatchDatabaseStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -156,7 +150,7 @@
         "notificationArns": [],
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e818e780c23a182d8343de121aa07c2fa0668d7f825d5bd29066972cd2f356d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a8896dcff9d3e1562299c1af22c6e12ffab52f758e6ae0cc16c6d266dcb3bcf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -197,124 +191,28 @@
             "data": "IngestCostsFunctionLogGroup9056FB7E"
           }
         ],
-        "/CostWatchApiStack/GetSummaryFunction/ServiceRole/Resource": [
+        "/CostWatchApiStack/GetDashboardFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GetSummaryFunctionServiceRoleBDEEB591"
+            "data": "GetDashboardFunctionServiceRole6EB16BC5"
           }
         ],
-        "/CostWatchApiStack/GetSummaryFunction/ServiceRole/DefaultPolicy/Resource": [
+        "/CostWatchApiStack/GetDashboardFunction/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GetSummaryFunctionServiceRoleDefaultPolicyFDB44032"
+            "data": "GetDashboardFunctionServiceRoleDefaultPolicyB0567B99"
           }
         ],
-        "/CostWatchApiStack/GetSummaryFunction/Resource": [
+        "/CostWatchApiStack/GetDashboardFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GetSummaryFunction801028A9"
+            "data": "GetDashboardFunction9CFB13B5"
           }
         ],
-        "/CostWatchApiStack/GetSummaryFunctionLogGroup/Resource": [
+        "/CostWatchApiStack/GetDashboardFunctionLogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GetSummaryFunctionLogGroupA2A2F1C4"
-          }
-        ],
-        "/CostWatchApiStack/GetServiceBreakdownFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetServiceBreakdownFunctionServiceRoleA3F2646C"
-          }
-        ],
-        "/CostWatchApiStack/GetServiceBreakdownFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetServiceBreakdownFunctionServiceRoleDefaultPolicyCB6800E3"
-          }
-        ],
-        "/CostWatchApiStack/GetServiceBreakdownFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetServiceBreakdownFunction88BAA614"
-          }
-        ],
-        "/CostWatchApiStack/GetServiceBreakdownFunctionLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetServiceBreakdownFunctionLogGroupE7C6A59D"
-          }
-        ],
-        "/CostWatchApiStack/GetTrendFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetTrendFunctionServiceRole108F7DD9"
-          }
-        ],
-        "/CostWatchApiStack/GetTrendFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetTrendFunctionServiceRoleDefaultPolicy2C8569FC"
-          }
-        ],
-        "/CostWatchApiStack/GetTrendFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetTrendFunctionF06B7DA6"
-          }
-        ],
-        "/CostWatchApiStack/GetTrendFunctionLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetTrendFunctionLogGroupC91ECE18"
-          }
-        ],
-        "/CostWatchApiStack/GetForecastFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetForecastFunctionServiceRole3E2BEADC"
-          }
-        ],
-        "/CostWatchApiStack/GetForecastFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetForecastFunctionServiceRoleDefaultPolicy2EDB52D5"
-          }
-        ],
-        "/CostWatchApiStack/GetForecastFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetForecastFunctionECD0599B"
-          }
-        ],
-        "/CostWatchApiStack/GetForecastFunctionLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetForecastFunctionLogGroupFAF4388A"
-          }
-        ],
-        "/CostWatchApiStack/GetAccountsFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetAccountsFunctionServiceRole5443B61E"
-          }
-        ],
-        "/CostWatchApiStack/GetAccountsFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetAccountsFunctionServiceRoleDefaultPolicy777F7C81"
-          }
-        ],
-        "/CostWatchApiStack/GetAccountsFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetAccountsFunctionBAE46E0C"
-          }
-        ],
-        "/CostWatchApiStack/GetAccountsFunctionLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GetAccountsFunctionLogGroup680F4746"
+            "data": "GetDashboardFunctionLogGroupDBA6448A"
           }
         ],
         "/CostWatchApiStack/CostWatchApi/Resource": [
@@ -338,7 +236,7 @@
         "/CostWatchApiStack/CostWatchApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiDeployment707CC75B182fcaf3acfdb3aac71416b56b3852cd"
+            "data": "CostWatchApiDeployment707CC75Bb0f272bd5da4ad2679cbbbb95d649144"
           }
         ],
         "/CostWatchApiStack/CostWatchApi/DeploymentStage.prod/Resource": [
@@ -359,154 +257,34 @@
             "data": "CostWatchApiOPTIONS42338055"
           }
         ],
-        "/CostWatchApiStack/CostWatchApi/Default/summary/Resource": [
+        "/CostWatchApiStack/CostWatchApi/Default/dashboard/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CostWatchApisummary2BC9C8AA"
+            "data": "CostWatchApidashboard35A25B1D"
           }
         ],
-        "/CostWatchApiStack/CostWatchApi/Default/summary/OPTIONS/Resource": [
+        "/CostWatchApiStack/CostWatchApi/Default/dashboard/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CostWatchApisummaryOPTIONS2902CE1D"
+            "data": "CostWatchApidashboardOPTIONS6A605D70"
           }
         ],
-        "/CostWatchApiStack/CostWatchApi/Default/summary/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..summary": [
+        "/CostWatchApiStack/CostWatchApi/Default/dashboard/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..dashboard": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CostWatchApisummaryGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETsummaryD5C46B4E"
+            "data": "CostWatchApidashboardGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETdashboard024CF1CB"
           }
         ],
-        "/CostWatchApiStack/CostWatchApi/Default/summary/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..summary": [
+        "/CostWatchApiStack/CostWatchApi/Default/dashboard/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..dashboard": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CostWatchApisummaryGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETsummaryF8ABBA40"
+            "data": "CostWatchApidashboardGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETdashboardF4E774CE"
           }
         ],
-        "/CostWatchApiStack/CostWatchApi/Default/summary/GET/Resource": [
+        "/CostWatchApiStack/CostWatchApi/Default/dashboard/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CostWatchApisummaryGET87EFCBD2"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/services/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiservices48962D53"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/services/OPTIONS/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiservicesOPTIONSDC5ADCC3"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/services/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..services": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiservicesGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETservices457D3499"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/services/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..services": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiservicesGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETservices0501E88A"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/services/GET/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiservicesGETAC1F9D74"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/trend/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApitrendD70DE623"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/trend/OPTIONS/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApitrendOPTIONSA2D96355"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/trend/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..trend": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApitrendGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETtrend0CE41D60"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/trend/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..trend": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApitrendGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETtrendBE5C208A"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/trend/GET/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApitrendGET79D0AC36"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/forecast/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiforecastD1CD00EE"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/forecast/OPTIONS/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiforecastOPTIONSA7DA7D98"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/forecast/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..forecast": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiforecastGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETforecast7D537E54"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/forecast/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..forecast": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiforecastGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETforecast54FBA6FC"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/forecast/GET/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiforecastGETF5F70C09"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/accounts/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiaccounts20557C02"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/accounts/OPTIONS/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiaccountsOPTIONSC5B60A17"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/accounts/GET/ApiPermission.CostWatchApiStackCostWatchApiE41D6106.GET..accounts": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiaccountsGETApiPermissionCostWatchApiStackCostWatchApiE41D6106GETaccountsE5D8933C"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/accounts/GET/ApiPermission.Test.CostWatchApiStackCostWatchApiE41D6106.GET..accounts": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiaccountsGETApiPermissionTestCostWatchApiStackCostWatchApiE41D6106GETaccounts8D856F1B"
-          }
-        ],
-        "/CostWatchApiStack/CostWatchApi/Default/accounts/GET/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CostWatchApiaccountsGET3159A4AB"
+            "data": "CostWatchApidashboardGET217CEDA1"
           }
         ],
         "/CostWatchApiStack/CostWatchApi/CostWatchApiKey/Resource": [

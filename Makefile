@@ -1,4 +1,4 @@
-.PHONY: deploy unit-testing lint format install bootstrap synth diff
+.PHONY: deploy unit-testing lint format install bootstrap synth diff destroy
 
 install:
 	uv sync
@@ -23,3 +23,6 @@ synth:
 
 diff:
 	PYTHONPATH=. cdk diff --profile gsti-us --app "python cdk/app.py"
+
+destroy:
+	PYTHONPATH=. cdk destroy --all --profile gsti-us --app "python cdk/app.py"

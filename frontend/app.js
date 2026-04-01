@@ -1,18 +1,21 @@
 /* ============================================================
    CostWatch — Application Logic
+   Single /dashboard call loads all pre-computed data.
    ============================================================ */
 
 // ---------- CONFIG ----------
 const CONFIG = {
-  apiBase: "https://pjwgnl7k38.execute-api.us-east-1.amazonaws.com/prod",
+  apiBase: "https://xc2kc55o9g.execute-api.us-east-1.amazonaws.com/prod",
   apiKey: "8V9asI6yRD6oFPIx0vJWca6b2F3wOyoXf1hJSL3g",
 };
 
 // ---------- State ----------
 let currentCurrency = "USD";
-let summaryData = null;
+let dashboardData = null;
 let trendGranularity = "DAILY";
 let trendChart = null;
+let servicesChart = null;
+let accountDonutChart = null;
 
 // ---------- Account Name Mapping ----------
 const ACCOUNT_NAMES = {
@@ -30,19 +33,11 @@ const ACCOUNT_NAMES = {
   "default": "Consolidated",
 };
 function accountName(id) { return ACCOUNT_NAMES[id] || id; }
-let servicesChart = null;
-let accountDonutChart = null;
 
 // ---------- Helpers ----------
-function currencySymbol() {
-  return currentCurrency === "USD" ? "$" : "R$";
-}
-function amountKey() {
-  return currentCurrency === "USD" ? "amount_usd" : "amount_brl";
-}
-function totalKey() {
-  return currentCurrency === "USD" ? "total_usd" : "total_brl";
-}
+function currencySymbol() { return currentCurrency === "USD" ? "$" : "R$"; }
+function amountKey() { return currentCurrency === "USD" ? "amount_usd" : "amount_brl"; }
+function totalKey() { return currentCurrency === "USD" ? "total_usd" : "total_brl"; }
 function fmt(value) {
   const n = Number(value) || 0;
   return `${currencySymbol()}${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -51,32 +46,17 @@ function pctFmt(value) {
   const n = Number(value) || 0;
   return `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
 }
-function yesterdayStr() {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
 
 // ---------- API Layer ----------
-async function apiFetch(path, params = {}) {
-  const url = new URL(`${CONFIG.apiBase}${path}`);
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null) url.searchParams.set(k, v);
-  });
-  const res = await fetch(url.toString(), {
-    headers: { "x-api-key": CONFIG.apiKey },
-  });
+async function fetchDashboard() {
+  const url = `${CONFIG.apiBase}/dashboard`;
+  const res = await fetch(url, { headers: { "x-api-key": CONFIG.apiKey } });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`API ${res.status}: ${text || res.statusText}`);
   }
   return res.json();
 }
-async function fetchSummary() { return apiFetch("/summary"); }
-async function fetchServices(granularity, period) { return apiFetch("/services", { granularity, period }); }
-async function fetchTrend(granularity, n) { return apiFetch("/trend", { granularity, n }); }
-async function fetchForecast() { return apiFetch("/forecast"); }
-async function fetchAccounts(granularity, period) { return apiFetch("/accounts", { granularity, period }); }
 
 // ---------- Error Toast ----------
 function showError(msg) {
@@ -100,22 +80,6 @@ function showError(msg) {
   toast._timer = setTimeout(() => { toast.style.opacity = "0"; }, 5000);
 }
 
-// ---------- Sparkline SVG ----------
-function renderSparkline(svgEl, values) {
-  if (!values || values.length < 2) return;
-  const poly = svgEl.querySelector("polyline");
-  if (!poly) return;
-  const w = 60, h = 24, pad = 2;
-  const nums = values.map(Number);
-  const min = Math.min(...nums), max = Math.max(...nums), range = max - min || 1;
-  const pts = nums.map((v, i) => {
-    const x = pad + (i / (nums.length - 1)) * (w - 2 * pad);
-    const y = h - pad - ((v - min) / range) * (h - 2 * pad);
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
-  poly.setAttribute("points", pts.join(" "));
-}
-
 // ---------- Animated Counter ----------
 function animateValue(el, target, duration = 1200) {
   const start = performance.now();
@@ -129,9 +93,8 @@ function animateValue(el, target, duration = 1200) {
 }
 
 // ---------- KPI Cards ----------
-function renderKPI(data) {
-  if (!data) return;
-  summaryData = data;
+function renderKPI(summary) {
+  if (!summary) return;
   const cards = [
     { id: "Today", key: "today" },
     { id: "Mtd", key: "mtd" },
@@ -142,8 +105,8 @@ function renderKPI(data) {
     const valEl = document.getElementById(`kpi${id}`);
     const deltaEl = document.getElementById(`delta${id}`);
     if (!valEl) return;
-    const usdVal = Number(data[`${key}_usd`] ?? 0);
-    const brlVal = Number(data[`${key}_brl`] ?? 0);
+    const usdVal = Number(summary[`${key}_usd`] ?? 0);
+    const brlVal = Number(summary[`${key}_brl`] ?? 0);
     const target = currentCurrency === "USD" ? usdVal : brlVal;
     valEl.dataset.usd = usdVal;
     valEl.dataset.brl = brlVal;
@@ -162,12 +125,37 @@ function chartColors() {
   };
 }
 
+// ---------- Aggregate daily data into ISO weeks ----------
+function aggregateToWeeks(dailyItems) {
+  const weeks = {};
+  for (const d of dailyItems) {
+    const dt = new Date(d.period + "T00:00:00");
+    // ISO week: get the Monday of this week
+    const day = dt.getDay();
+    const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(dt);
+    monday.setDate(diff);
+    const weekKey = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    if (!weeks[weekKey]) weeks[weekKey] = { total_usd: 0, total_brl: 0 };
+    weeks[weekKey].total_usd += Number(d.total_usd || 0);
+    weeks[weekKey].total_brl += Number(d.total_brl || 0);
+  }
+  return Object.entries(weeks)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([period, totals]) => ({ period: `W ${period}`, total_usd: totals.total_usd, total_brl: totals.total_brl }));
+}
+
 // ---------- Trend Line Chart ----------
-async function renderTrendChart(granularity) {
-  const n = granularity === "DAILY" ? 30 : 12;
-  let data;
-  try { data = await fetchTrend(granularity, n); } catch (e) { showError(`Trend: ${e.message}`); return; }
-  const items = Array.isArray(data) ? data : [];
+function renderTrendChart(granularity) {
+  let items;
+  if (granularity === "DAILY") {
+    items = dashboardData?.daily_trend || [];
+  } else if (granularity === "WEEKLY") {
+    // Aggregate daily data into ISO weeks
+    items = aggregateToWeeks(dashboardData?.daily_trend || []);
+  } else {
+    items = dashboardData?.monthly_trend || [];
+  }
   const labels = items.map((d) => d.period);
   const values = items.map((d) => Number(d[totalKey()] ?? 0));
   const c = chartColors();
@@ -193,10 +181,8 @@ async function renderTrendChart(granularity) {
 }
 
 // ---------- Top 10 Services Bar Chart ----------
-async function renderServicesChart() {
-  let data;
-  try { data = await fetchServices("DAILY", yesterdayStr()); } catch (e) { showError(`Services: ${e.message}`); return; }
-  const items = (Array.isArray(data) ? data : []).slice(0, 10);
+function renderServicesChart() {
+  const items = (dashboardData?.services || []).slice(0, 10);
   if (!items.length) return;
   const labels = items.map((d) => d.service_name);
   const values = items.map((d) => Number(d[amountKey()] ?? 0));
@@ -204,7 +190,6 @@ async function renderServicesChart() {
   const c = chartColors();
   const ctx = document.getElementById("servicesChart");
   const barColors = values.map((_, i) => i / Math.max(values.length - 1, 1) < 0.5 ? c.blue : c.green);
-
   if (servicesChart) {
     servicesChart.data.labels = labels;
     servicesChart.data.datasets[0].data = values;
@@ -227,10 +212,10 @@ async function renderServicesChart() {
 }
 
 // ---------- Account Donut Chart ----------
-function renderAccountDonut(items) {
-  const data = (Array.isArray(items) ? items : []).slice(0, 8);
+function renderAccountDonut() {
+  const data = (dashboardData?.accounts || []).slice(0, 8);
   if (!data.length) return;
-  const labels = data.map((d) => d.account_id ?? d.service_name ?? "Other");
+  const labels = data.map((d) => accountName(d.account_id));
   const values = data.map((d) => Number(d[amountKey()] ?? 0));
   const total = values.reduce((a, b) => a + b, 0);
   const c = chartColors();
@@ -271,22 +256,17 @@ function renderAccountDonut(items) {
 }
 
 // ---------- Service Heatmap ----------
-async function renderHeatmap() {
+function renderHeatmap() {
   const grid = document.getElementById("heatmapGrid");
   if (!grid) return;
   grid.innerHTML = "";
-  const periods = [];
-  const now = new Date();
-  for (let i = 7; i >= 0; i--) {
-    const d = new Date(now); d.setDate(d.getDate() - i - 1);
-    periods.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`);
-  }
+  const heatmap = dashboardData?.heatmap || {};
+  const periods = Object.keys(heatmap).sort();
+  if (!periods.length) return;
+
   const periodData = {};
   for (const p of periods) {
-    try {
-      const res = await fetchServices("DAILY", p);
-      periodData[p] = Array.isArray(res) ? res : [];
-    } catch { periodData[p] = []; }
+    periodData[p] = Array.isArray(heatmap[p]) ? heatmap[p] : [];
   }
   const serviceTotals = {};
   Object.values(periodData).flat().forEach((s) => {
@@ -332,42 +312,12 @@ async function renderHeatmap() {
   });
 }
 
-// ---------- Currency Toggle ----------
-document.querySelectorAll(".currency-toggle__btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const newCurrency = btn.dataset.currency;
-    if (newCurrency === currentCurrency) return;
-    currentCurrency = newCurrency;
-    document.querySelectorAll(".currency-toggle__btn").forEach((b) => {
-      b.classList.toggle("currency-toggle__btn--active", b.dataset.currency === currentCurrency);
-    });
-    ["Today", "Mtd", "Prev", "Forecast"].forEach((id) => {
-      const el = document.getElementById(`kpi${id}`);
-      if (el) animateValue(el, Number(currentCurrency === "USD" ? el.dataset.usd : el.dataset.brl) || 0);
-    });
-    renderTrendChart(trendGranularity);
-    renderServicesChart();
-    renderHeatmap();
-  });
-});
-
-// ---------- Trend Tab Switching ----------
-document.querySelectorAll(".trend-tabs__btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    trendGranularity = btn.dataset.granularity;
-    document.querySelectorAll(".trend-tabs__btn").forEach((b) => {
-      b.classList.toggle("trend-tabs__btn--active", b === btn);
-    });
-    renderTrendChart(trendGranularity);
-  });
-});
-
 // ---------- Account Cost Table ----------
-function renderAccountTable(accounts) {
+function renderAccountTable() {
   const tbody = document.getElementById("accountTableBody");
   if (!tbody) return;
   tbody.innerHTML = "";
-  const items = Array.isArray(accounts) ? accounts : [];
+  const items = dashboardData?.accounts || [];
   if (!items.length) {
     tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);text-align:center;padding:24px;">No account data available</td></tr>';
     return;
@@ -386,30 +336,51 @@ function renderAccountTable(accounts) {
   });
 }
 
+// ---------- Currency Toggle ----------
+document.querySelectorAll(".currency-toggle__btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const newCurrency = btn.dataset.currency;
+    if (newCurrency === currentCurrency) return;
+    currentCurrency = newCurrency;
+    document.querySelectorAll(".currency-toggle__btn").forEach((b) => {
+      b.classList.toggle("currency-toggle__btn--active", b.dataset.currency === currentCurrency);
+    });
+    renderAll();
+  });
+});
+
+// ---------- Trend Tab Switching ----------
+document.querySelectorAll(".trend-tabs__btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    trendGranularity = btn.dataset.granularity;
+    document.querySelectorAll(".trend-tabs__btn").forEach((b) => {
+      b.classList.toggle("trend-tabs__btn--active", b === btn);
+    });
+    renderTrendChart(trendGranularity);
+  });
+});
+
+// ---------- Render All (from cached data) ----------
+function renderAll() {
+  if (!dashboardData) return;
+  renderKPI(dashboardData.summary);
+  renderTrendChart(trendGranularity);
+  renderServicesChart();
+  renderAccountDonut();
+  renderAccountTable();
+  renderHeatmap();
+}
+
 // ---------- Init ----------
 async function init() {
   const synced = document.getElementById("lastSynced");
   try {
-    const [summary, forecast] = await Promise.all([
-      fetchSummary().catch((e) => { showError(`Summary: ${e.message}`); return null; }),
-      fetchForecast().catch((e) => { showError(`Forecast: ${e.message}`); return null; }),
-    ]);
-    const merged = { ...(summary ?? {}), ...(forecast ?? {}) };
-    renderKPI(merged);
+    dashboardData = await fetchDashboard();
+    renderAll();
     if (synced) synced.textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
-
-    await renderTrendChart(trendGranularity);
-    await renderServicesChart();
-
-    // Account donut — use yesterday's account data
-    try {
-      const acctData = await fetchAccounts("DAILY", yesterdayStr());
-      renderAccountDonut(acctData.map(a => ({ ...a, service_name: accountName(a.account_id) })));
-      renderAccountTable(acctData);
-    } catch (e) { showError(`Accounts: ${e.message}`); }
-
-    await renderHeatmap();
-  } catch (e) { showError(`Init failed: ${e.message}`); }
+  } catch (e) {
+    showError(`Failed to load dashboard: ${e.message}`);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);

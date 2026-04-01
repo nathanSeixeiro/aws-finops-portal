@@ -106,8 +106,8 @@
      "Enabled": true
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
    "Metadata": {
     "aws:cdk:path": "CostWatchDatabaseStack/CostRecordsTable/Resource"
    }
@@ -141,8 +141,8 @@
     },
     "TableName": "costwatch-budgets"
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
    "Metadata": {
     "aws:cdk:path": "CostWatchDatabaseStack/BudgetsTable/Resource"
    }
@@ -210,17 +210,6 @@
    },
    "Export": {
     "Name": "CostWatchDatabaseStack:ExportsOutputRefBudgetsTable6D971670DE86C705"
-   }
-  },
-  "ExportsOutputFnGetAttBudgetsTable6D971670Arn64554516": {
-   "Value": {
-    "Fn::GetAtt": [
-     "BudgetsTable6D971670",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "CostWatchDatabaseStack:ExportsOutputFnGetAttBudgetsTable6D971670Arn64554516"
    }
   }
  },
