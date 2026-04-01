@@ -671,3 +671,190 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
   }
 }
+
+/* ============================================================
+   Kubernetes Costs (Kubecost) — K8s Section Styles
+   ============================================================ */
+
+/* ---------- K8s Section ---------- */
+.k8s-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------- K8s Section Header ---------- */
+.k8s-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+}
+
+.k8s-section-header__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.k8s-link {
+  font-size: 0.75rem;
+  color: var(--accent-blue);
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity var(--transition);
+}
+
+.k8s-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ---------- K8s Time Window Tabs (pill-toggle) ---------- */
+.k8s-time-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-deep);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.k8s-time-tabs__btn {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.k8s-time-tabs__btn--active {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.k8s-time-tabs__btn:hover:not(.k8s-time-tabs__btn--active) {
+  color: var(--text-secondary);
+}
+
+/* ---------- K8s KPI Grid ---------- */
+.k8s-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 280px));
+  gap: 20px;
+}
+
+/* ---------- Network Costs List ---------- */
+.network-costs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.network-costs-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.network-costs-item:last-child {
+  border-bottom: none;
+}
+
+.network-costs-item__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.network-costs-item__value {
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ---------- K8s Unavailable State ---------- */
+.k8s-unavailable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ---------- K8s Loading Skeleton ---------- */
+.k8s-loading {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.k8s-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 100%
+  );
+  animation: k8sShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes k8sShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ---------- K8s Panel Animations (staggered fadeInUp) ---------- */
+.k8s-section .k8s-kpi-grid {
+  animation: fadeInUp 0.5s ease both;
+  animation-delay: 100ms;
+}
+
+.k8s-section #k8sChartsRow {
+  animation: fadeInUp 0.5s ease both;
+  animation-delay: 200ms;
+}
+
+.k8s-section #k8sNetworkPanel {
+  animation: fadeInUp 0.5s ease both;
+  animation-delay: 300ms;
+}
+
+/* ---------- K8s Responsive ---------- */
+@media (max-width: 1200px) {
+  .k8s-section .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .k8s-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .k8s-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

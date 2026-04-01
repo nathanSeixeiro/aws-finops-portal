@@ -393,18 +393,624 @@ function renderAll() {
       if (el.textContent.startsWith("Cost per Account")) el.textContent = `Cost per Account (${label})`;
     });
   }
+
+  // Render Kubecost panels from cached data
+  renderAllKubecost();
 }
 
 // ---------- Init ----------
 async function init() {
   const synced = document.getElementById("lastSynced");
   try {
-    dashboardData = await fetchDashboard();
-    renderAll();
-    if (synced) synced.textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
+    // Fetch AWS and Kubecost data in parallel
+    const [awsResult] = await Promise.allSettled([
+      fetchDashboard(),
+      initKubecost(),
+    ]);
+    if (awsResult.status === "fulfilled") {
+      dashboardData = awsResult.value;
+      renderAll();
+      if (synced) synced.textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
+    } else {
+      throw awsResult.reason;
+    }
   } catch (e) {
     showError(`Failed to load dashboard: ${e.message}`);
   }
+}
+
+// ============================================================
+// Kubecost Integration — API Client & Data Layer
+// ============================================================
+
+// ---------- Kubecost Config ----------
+const KUBECOST_CONFIG = {
+  baseUrl: "https://kubecost-eks-prd.sesisenaisp.org.br",
+};
+
+// ---------- Kubecost State ----------
+let kubecostData = null;
+let kubecostWindow = "7d";
+let kubecostAvailable = true;
+let clusterBreakdownChart = null;
+let namespaceChart = null;
+
+// ---------- Kubecost Helpers ----------
+const KUBECOST_BRL_RATE = 5.05;
+
+function k8sConvert(usdValue) {
+  const n = Number(usdValue) || 0;
+  return currentCurrency === "BRL" ? n * KUBECOST_BRL_RATE : n;
+}
+
+function fmtK8s(value) {
+  const converted = k8sConvert(value);
+  return `${currencySymbol()}${converted.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+// ---------- Kubecost Fetch ----------
+async function fetchKubecostEndpoint(path, params = {}) {
+  const url = new URL(path, KUBECOST_CONFIG.baseUrl);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(url.toString(), { signal: controller.signal });
+    if (!res.ok) throw new Error(`Kubecost ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error(`Kubecost fetch failed [${path}]:`, err);
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchClusterCosts(window = "7d") {
+  // Use allocation?aggregate=cluster since /model/clusterCosts is not available
+  return fetchKubecostEndpoint("/model/allocation", { window, aggregate: "cluster" });
+}
+
+async function fetchAllocation(window = "7d", aggregate = "namespace") {
+  return fetchKubecostEndpoint("/model/allocation", { window, aggregate });
+}
+
+async function fetchAssets(window = "7d") {
+  return fetchKubecostEndpoint("/model/assets", { window });
+}
+
+async function fetchSavings() {
+  return fetchKubecostEndpoint("/model/savings");
+}
+
+// ---------- Kubecost Data Normalization ----------
+function normalizeClusterCosts(raw) {
+  if (!raw || !raw.data) return {};
+  const items = Array.isArray(raw.data) ? raw.data : [raw.data];
+  const clusters = {};
+  for (const bucket of items) {
+    if (!bucket) continue;
+    for (const [name, info] of Object.entries(bucket)) {
+      if (name === "__idle__") continue;
+      if (!clusters[name]) {
+        clusters[name] = { totalCost: 0, cpuCost: 0, memoryCost: 0, storageCost: 0, networkCost: 0, cpuEfficiency: 0, memoryEfficiency: 0, efficiency: 0, _count: 0 };
+      }
+      const c = clusters[name];
+      c.totalCost += Number(info.totalCost ?? 0);
+      c.cpuCost += Number(info.cpuCost ?? 0);
+      c.memoryCost += Number(info.ramCost ?? info.memoryCost ?? 0);
+      c.storageCost += Number(info.pvCost ?? info.storageCost ?? 0);
+      c.networkCost += Number(info.networkCost ?? 0);
+      c.cpuEfficiency += Number(info.cpuEfficiency ?? 0);
+      c.memoryEfficiency += Number(info.ramEfficiency ?? info.memoryEfficiency ?? 0);
+      c.efficiency += Number(info.totalEfficiency ?? info.efficiency ?? 0);
+      c._count += 1;
+    }
+  }
+  // Average the efficiency values across daily buckets
+  for (const c of Object.values(clusters)) {
+    if (c._count > 0) {
+      c.cpuEfficiency /= c._count;
+      c.memoryEfficiency /= c._count;
+      c.efficiency /= c._count;
+    }
+    delete c._count;
+  }
+  return clusters;
+}
+
+function normalizeAllocation(raw) {
+  if (!raw || !raw.data || !Array.isArray(raw.data)) return [];
+  const nsMap = {};
+  for (const bucket of raw.data) {
+    if (!bucket) continue;
+    for (const [name, info] of Object.entries(bucket)) {
+      if (name === "__idle__") continue;
+      if (!nsMap[name]) {
+        nsMap[name] = {
+          name: info.name || name,
+          cluster: info.properties?.cluster || "",
+          cpuCost: 0, memoryCost: 0, storageCost: 0, networkCost: 0, totalCost: 0,
+          networkCrossZoneCost: 0, networkInternetCost: 0, networkRegionCost: 0,
+        };
+      }
+      const ns = nsMap[name];
+      ns.cpuCost += Number(info.cpuCost ?? 0);
+      ns.memoryCost += Number(info.ramCost ?? info.memoryCost ?? 0);
+      ns.storageCost += Number(info.pvCost ?? info.storageCost ?? 0);
+      ns.networkCost += Number(info.networkCost ?? 0);
+      ns.totalCost += Number(info.totalCost ?? 0);
+      ns.networkCrossZoneCost += Number(info.networkCrossZoneCost ?? 0);
+      ns.networkInternetCost += Number(info.networkInternetCost ?? 0);
+      ns.networkRegionCost += Number(info.networkCrossRegionCost ?? info.networkRegionCost ?? 0);
+    }
+  }
+  return Object.values(nsMap).sort((a, b) => b.totalCost - a.totalCost);
+}
+
+function normalizeSavings(raw) {
+  if (!raw || !raw.data) return { totalMonthlySavings: 0, recommendations: [] };
+  const data = raw.data;
+
+  // Savings API returns category objects with savingsPerMonth, not a recommendations array
+  const categoryLabels = {
+    abandonedWorkloads: "Abandoned workloads",
+    nodeGroupSizing: "Node group right-sizing",
+    orphanedResources: "Orphaned resources",
+    underutilizedLocalDisks: "Underutilized local disks",
+    persistentVolumeSizing: "Persistent volume right-sizing",
+    unclaimedVolumes: "Unclaimed volumes",
+    containerRequestSizing: "Container request right-sizing",
+  };
+
+  const recs = [];
+  let totalMonthlySavings = 0;
+
+  for (const [key, label] of Object.entries(categoryLabels)) {
+    const cat = data[key];
+    if (cat && typeof cat.savingsPerMonth === "number") {
+      totalMonthlySavings += cat.savingsPerMonth;
+      if (cat.savingsPerMonth > 0) {
+        recs.push({ type: key, description: label, monthlySavings: cat.savingsPerMonth });
+      }
+    }
+  }
+
+  recs.sort((a, b) => b.monthlySavings - a.monthlySavings);
+  return { totalMonthlySavings, recommendations: recs };
+}
+
+function computeTotals(clusterCosts) {
+  const entries = Object.values(clusterCosts);
+  if (!entries.length) return { totalK8sCost: 0, overallEfficiency: 0 };
+  const totalK8sCost = entries.reduce((sum, c) => sum + c.totalCost, 0);
+  const overallEfficiency = totalK8sCost > 0
+    ? entries.reduce((sum, c) => sum + c.efficiency * c.totalCost, 0) / totalK8sCost
+    : 0;
+  return { totalK8sCost, overallEfficiency };
+}
+
+function computeNetworkTotals(allocation) {
+  return allocation.reduce(
+    (acc, ns) => ({
+      crossZone: acc.crossZone + ns.networkCrossZoneCost,
+      internet: acc.internet + ns.networkInternetCost,
+      region: acc.region + ns.networkRegionCost,
+    }),
+    { crossZone: 0, internet: 0, region: 0 }
+  );
+}
+
+// ============================================================
+// Kubecost — Loading, Error & KPI Rendering
+// ============================================================
+
+const K8S_PANEL_IDS = [
+  "k8sKpiGrid",
+  "k8sChartsRow",
+  "k8sNetworkPanel",
+];
+
+// ---------- Loading State ----------
+function showKubecostLoading() {
+  K8S_PANEL_IDS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("k8s-loading");
+  });
+}
+
+function hideKubecostLoading() {
+  K8S_PANEL_IDS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("k8s-loading");
+  });
+}
+
+// ---------- Unavailable State ----------
+function showKubecostUnavailable() {
+  hideKubecostLoading();
+  K8S_PANEL_IDS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+  const section = document.getElementById("k8sSection");
+  if (!section) return;
+  let msg = section.querySelector(".k8s-unavailable");
+  if (!msg) {
+    msg = document.createElement("div");
+    msg.className = "k8s-unavailable";
+    msg.setAttribute("role", "status");
+    msg.textContent = "Kubecost data unavailable \u2014 connect to internal network";
+    section.appendChild(msg);
+  }
+  msg.style.display = "";
+}
+
+function hideKubecostUnavailable() {
+  const section = document.getElementById("k8sSection");
+  if (!section) return;
+  const msg = section.querySelector(".k8s-unavailable");
+  if (msg) msg.style.display = "none";
+  K8S_PANEL_IDS.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "";
+  });
+}
+
+// ---------- Per-Panel Error ----------
+function showPanelUnavailable(panelEl) {
+  if (!panelEl) return;
+  let msg = panelEl.querySelector(".k8s-panel-error");
+  if (!msg) {
+    msg = document.createElement("div");
+    msg.className = "k8s-panel-error";
+    msg.setAttribute("role", "status");
+    msg.style.cssText = "color:var(--text-muted);text-align:center;padding:24px;font-size:0.875rem;";
+    msg.textContent = "Data unavailable";
+    panelEl.appendChild(msg);
+  }
+  msg.style.display = "";
+}
+
+function hidePanelUnavailable(panelEl) {
+  if (!panelEl) return;
+  const msg = panelEl.querySelector(".k8s-panel-error");
+  if (msg) msg.style.display = "none";
+}
+
+// ---------- K8s KPI Cards ----------
+function animateK8sValue(el, target, duration = 1200) {
+  const converted = k8sConvert(target);
+  const start = performance.now();
+  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+  function tick(now) {
+    const elapsed = Math.min((now - start) / duration, 1);
+    const current = converted * easeOutExpo(elapsed);
+    el.textContent = `${currencySymbol()}${current.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (elapsed < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function renderK8sKPIs(clusterCosts) {
+  const totals = computeTotals(clusterCosts || {});
+
+  const costEl = document.getElementById("kpiK8sCost");
+
+  if (costEl) animateK8sValue(costEl, totals.totalK8sCost);
+}
+
+// ---------- Cluster Breakdown Chart ----------
+function renderClusterBreakdownChart(clusterCosts) {
+  if (!clusterCosts || !Object.keys(clusterCosts).length) {
+    showPanelUnavailable(document.getElementById("clusterBreakdownChart")?.closest(".panel"));
+    return;
+  }
+  const sorted = Object.entries(clusterCosts).sort((a, b) => b[1].totalCost - a[1].totalCost);
+  const labels = sorted.map(([name]) => name);
+  const values = sorted.map(([, c]) => c.totalCost);
+  const total = values.reduce((a, b) => a + b, 0);
+  const c = chartColors();
+  const palette = [c.blue, c.green, c.amber];
+  const ctx = document.getElementById("clusterBreakdownChart");
+  if (!ctx) return;
+
+  if (clusterBreakdownChart) {
+    clusterBreakdownChart.data.labels = labels;
+    clusterBreakdownChart.data.datasets[0].data = values;
+    clusterBreakdownChart.data.datasets[0].backgroundColor = palette.slice(0, labels.length);
+    clusterBreakdownChart.update("active");
+    return;
+  }
+
+  clusterBreakdownChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: palette.slice(0, labels.length),
+        hoverBackgroundColor: c.green,
+        borderRadius: 4,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 600 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (tip) => {
+              const pct = total > 0 ? ((tip.raw / total) * 100).toFixed(1) : "0.0";
+              return `${fmtK8s(tip.raw)} (${pct}%)`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { color: c.text, callback: (v) => fmtK8s(v) }, grid: { color: c.grid } },
+        y: { ticks: { color: c.text }, grid: { display: false } },
+      },
+    },
+  });
+}
+
+// ---------- Namespace Allocation Chart ----------
+function renderNamespaceChart(allocation) {
+  if (!allocation || !allocation.length) {
+    showPanelUnavailable(document.getElementById("namespaceChart")?.closest(".panel"));
+    return;
+  }
+  const top10 = allocation.slice(0, 10);
+  const labels = top10.map((ns) => ns.name);
+  const values = top10.map((ns) => ns.totalCost);
+  const total = allocation.reduce((sum, ns) => sum + ns.totalCost, 0);
+  const c = chartColors();
+  const barColors = values.map((_, i) => i / Math.max(values.length - 1, 1) < 0.5 ? c.blue : c.green);
+  const ctx = document.getElementById("namespaceChart");
+  if (!ctx) return;
+
+  if (namespaceChart) {
+    namespaceChart.data.labels = labels;
+    namespaceChart.data.datasets[0].data = values;
+    namespaceChart.data.datasets[0].backgroundColor = barColors;
+    namespaceChart.update("active");
+    return;
+  }
+
+  namespaceChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: barColors,
+        hoverBackgroundColor: c.green,
+        borderRadius: 4,
+        borderSkipped: false,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 600 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (tip) => {
+              const ns = top10[tip.dataIndex];
+              const pct = total > 0 ? ((ns.totalCost / total) * 100).toFixed(1) : "0.0";
+              return [
+                `Total: ${fmtK8s(ns.totalCost)} (${pct}%)`,
+                `CPU: ${fmtK8s(ns.cpuCost)}`,
+                `Memory: ${fmtK8s(ns.memoryCost)}`,
+              ];
+            },
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { color: c.text, callback: (v) => fmtK8s(v) }, grid: { color: c.grid } },
+        y: { ticks: { color: c.text }, grid: { display: false } },
+      },
+    },
+  });
+}
+
+// ---------- Efficiency Panel ----------
+function renderEfficiencyPanel(clusterCosts) {
+  const panel = document.getElementById("k8sEfficiencyPanel");
+  if (!panel) return;
+  const content = panel.querySelector(".efficiency-panel-content");
+  if (!content) return;
+
+  if (!clusterCosts || !Object.keys(clusterCosts).length) {
+    showPanelUnavailable(panel);
+    return;
+  }
+  hidePanelUnavailable(panel);
+
+  const totals = computeTotals(clusterCosts);
+  const sorted = Object.entries(clusterCosts).sort((a, b) => b[1].totalCost - a[1].totalCost);
+
+  function gaugeColor(pct) {
+    if (pct > 60) return "green";
+    if (pct >= 30) return "amber";
+    return "coral";
+  }
+
+  function gaugeHTML(label, value) {
+    const pct = (value * 100).toFixed(1);
+    const color = gaugeColor(parseFloat(pct));
+    return `
+      <div class="efficiency-gauge efficiency-gauge--${color}">
+        <div class="efficiency-gauge__label">
+          <span>${label}</span>
+          <span>${pct}%</span>
+        </div>
+        <div class="efficiency-gauge__track">
+          <div class="efficiency-gauge__fill" style="width:${Math.min(parseFloat(pct), 100)}%"></div>
+        </div>
+      </div>`;
+  }
+
+  let html = `<div class="efficiency-cluster">
+    <span class="efficiency-cluster__name" style="font-family:var(--font-heading);font-size:1.25rem;color:var(--accent-green);">Overall: ${(totals.overallEfficiency * 100).toFixed(1)}%</span>
+  </div>`;
+
+  for (const [name, c] of sorted) {
+    html += `<div class="efficiency-cluster">
+      <span class="efficiency-cluster__name">${name}</span>
+      ${gaugeHTML("CPU", c.cpuEfficiency)}
+      ${gaugeHTML("Memory", c.memoryEfficiency)}
+    </div>`;
+  }
+
+  content.innerHTML = html;
+}
+
+// ---------- Network Costs Panel ----------
+function renderNetworkCosts(allocation) {
+  const panel = document.getElementById("k8sNetworkPanel");
+  if (!panel) return;
+  const list = panel.querySelector(".network-costs-list");
+  if (!list) return;
+
+  if (!kubecostData || !kubecostData.networkTotals) {
+    showPanelUnavailable(panel);
+    return;
+  }
+  hidePanelUnavailable(panel);
+
+  const nt = kubecostData.networkTotals;
+  const items = [
+    { label: "Cross-Zone", value: nt.crossZone },
+    { label: "Internet Egress", value: nt.internet },
+    { label: "Region Egress", value: nt.region },
+  ];
+
+  list.innerHTML = items.map((item) => `
+    <div class="network-costs-item">
+      <span class="network-costs-item__label">${item.label}</span>
+      <span class="network-costs-item__value">${fmtK8s(item.value)}</span>
+    </div>`).join("");
+}
+
+// ---------- Savings Recommendations Panel ----------
+function renderSavingsPanel(savings) {
+  const panel = document.getElementById("k8sSavingsPanel");
+  if (!panel) return;
+  const list = panel.querySelector(".savings-list");
+  if (!list) return;
+
+  if (!savings || (!savings.totalMonthlySavings && !savings.recommendations.length)) {
+    showPanelUnavailable(panel);
+    return;
+  }
+  hidePanelUnavailable(panel);
+
+  const totalHtml = `<div class="savings-item" style="background:var(--bg-card-hover);">
+    <span class="savings-item__description" style="font-weight:700;">Total Potential Monthly Savings</span>
+    <span class="savings-item__amount" style="font-size:1.1rem;">${fmtK8s(savings.totalMonthlySavings)}</span>
+  </div>`;
+
+  const recsHtml = savings.recommendations
+    .sort((a, b) => b.monthlySavings - a.monthlySavings)
+    .map((r) => `<div class="savings-item">
+      <span class="savings-item__description">${r.description}</span>
+      <span class="savings-item__amount">${fmtK8s(r.monthlySavings)}/mo</span>
+    </div>`).join("");
+
+  list.innerHTML = totalHtml + recsHtml;
+}
+
+// ============================================================
+// Kubecost — Time Window Selector
+// ============================================================
+
+document.querySelectorAll(".k8s-time-tabs__btn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const newWindow = btn.dataset.k8sWindow;
+    if (newWindow === kubecostWindow) return;
+    kubecostWindow = newWindow;
+    document.querySelectorAll(".k8s-time-tabs__btn").forEach((b) => {
+      const isActive = b === btn;
+      b.classList.toggle("k8s-time-tabs__btn--active", isActive);
+      b.setAttribute("aria-checked", isActive ? "true" : "false");
+    });
+    // Set chart animation duration for smooth transitions
+    if (clusterBreakdownChart) {
+      clusterBreakdownChart.options.animation = { duration: 600 };
+    }
+    if (namespaceChart) {
+      namespaceChart.options.animation = { duration: 600 };
+    }
+    await initKubecost();
+  });
+});
+
+// ============================================================
+// Kubecost — Init & Render Orchestration
+// ============================================================
+
+function renderAllKubecost() {
+  if (!kubecostData) {
+    showKubecostUnavailable();
+    return;
+  }
+  hideKubecostUnavailable();
+  renderK8sKPIs(kubecostData.clusterCosts);
+  renderClusterBreakdownChart(kubecostData.clusterCosts);
+  renderNamespaceChart(kubecostData.allocation);
+  renderNetworkCosts(kubecostData.allocation);
+}
+
+async function initKubecost() {
+  showKubecostLoading();
+
+  const [clusterRes, allocRes, assetsRes] = await Promise.allSettled([
+    fetchClusterCosts(kubecostWindow),
+    fetchAllocation(kubecostWindow, "namespace"),
+    fetchAssets(kubecostWindow),
+  ]);
+
+  const clusterRaw = clusterRes.status === "fulfilled" ? clusterRes.value : null;
+  const allocRaw = allocRes.status === "fulfilled" ? allocRes.value : null;
+
+  // If all critical endpoints failed, mark unavailable
+  if (!clusterRaw && !allocRaw) {
+    kubecostData = null;
+    kubecostAvailable = false;
+    hideKubecostLoading();
+    showKubecostUnavailable();
+    return;
+  }
+
+  const clusterCosts = normalizeClusterCosts(clusterRaw);
+  const allocation = normalizeAllocation(allocRaw);
+  const totals = computeTotals(clusterCosts);
+  const networkTotals = computeNetworkTotals(allocation);
+
+  kubecostData = {
+    clusterCosts,
+    allocation,
+    totals,
+    networkTotals,
+    fetchedAt: new Date(),
+  };
+  kubecostAvailable = true;
+
+  hideKubecostLoading();
+  renderAllKubecost();
+
+  const synced = document.getElementById("k8sLastSynced");
+  if (synced) synced.textContent = `Last synced: ${kubecostData.fetchedAt.toLocaleTimeString()}`;
 }
 
 document.addEventListener("DOMContentLoaded", init);

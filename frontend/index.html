@@ -159,6 +159,61 @@
       </div>
     </section>
 
+    <!-- ===== KUBERNETES COSTS (KUBECOST) ===== -->
+    <section id="k8sSection" class="k8s-section" aria-label="Kubernetes costs from Kubecost">
+
+      <!-- Section header with title, last synced, and time window selector -->
+      <div class="k8s-section-header">
+        <div class="k8s-section-header__left">
+          <h2 class="panel__title">Kubernetes Costs (Kubecost)</h2>
+          <a href="https://kubecost-eks-prd.sesisenaisp.org.br" target="_blank" rel="noopener noreferrer" class="k8s-link" aria-label="Open Kubecost dashboard">Open Kubecost ↗</a>
+          <span class="header__synced" id="k8sLastSynced">Last synced: —</span>
+        </div>
+        <div class="k8s-time-tabs" role="radiogroup" aria-label="Kubecost time window selector">
+          <button class="k8s-time-tabs__btn" data-k8s-window="1d" role="radio" aria-checked="false">1d</button>
+          <button class="k8s-time-tabs__btn k8s-time-tabs__btn--active" data-k8s-window="7d" role="radio" aria-checked="true">7d</button>
+          <button class="k8s-time-tabs__btn" data-k8s-window="14d" role="radio" aria-checked="false">14d</button>
+        </div>
+      </div>
+
+      <!-- K8s KPI Cards -->
+      <div id="k8sKpiGrid" class="k8s-kpi-grid" aria-label="Kubernetes key performance indicators">
+        <article class="kpi-card" data-kpi="k8s-cost" style="animation-delay: 0ms">
+          <p class="kpi-card__label">Total K8s Cost</p>
+          <p class="kpi-card__value" id="kpiK8sCost">$0.00</p>
+        </article>
+      </div>
+
+      <!-- Charts Row: Cluster Breakdown + Namespace Allocation -->
+      <div id="k8sChartsRow" class="charts-row">
+        <section class="panel" aria-label="Cluster cost breakdown">
+          <div class="panel__header">
+            <h2 class="panel__title">Cluster Breakdown</h2>
+          </div>
+          <div class="services-chart-wrapper">
+            <canvas id="clusterBreakdownChart" aria-label="Cluster cost breakdown horizontal bar chart"></canvas>
+          </div>
+        </section>
+        <section class="panel" aria-label="Namespace cost allocation">
+          <div class="panel__header">
+            <h2 class="panel__title">Namespace Allocation</h2>
+          </div>
+          <div class="services-chart-wrapper">
+            <canvas id="namespaceChart" aria-label="Namespace cost allocation horizontal bar chart"></canvas>
+          </div>
+        </section>
+      </div>
+
+      <!-- Network Costs -->
+      <section id="k8sNetworkPanel" class="panel" aria-label="Kubernetes network costs">
+        <div class="panel__header">
+          <h2 class="panel__title">Network Costs</h2>
+        </div>
+        <div class="network-costs-list"></div>
+      </section>
+
+    </section>
+
   </main>
 
   <!-- Chart.js from CDN -->
