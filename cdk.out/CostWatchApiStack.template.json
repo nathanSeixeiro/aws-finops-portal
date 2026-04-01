@@ -125,7 +125,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3ffae925e5d9ce60e8832a5627e1234343226f202c7d5bdba22e3c48094d5a13.zip"
+     "S3Key": "884b6673a7912caffda6c08792570e68b9bfc1114b7f34dd1bea2f075ba8ebf8.zip"
     },
     "Environment": {
      "Variables": {
@@ -155,7 +155,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/IngestCostsFunction/Resource",
-    "aws:asset:path": "asset.3ffae925e5d9ce60e8832a5627e1234343226f202c7d5bdba22e3c48094d5a13",
+    "aws:asset:path": "asset.884b6673a7912caffda6c08792570e68b9bfc1114b7f34dd1bea2f075ba8ebf8",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -271,7 +271,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3ffae925e5d9ce60e8832a5627e1234343226f202c7d5bdba22e3c48094d5a13.zip"
+     "S3Key": "884b6673a7912caffda6c08792570e68b9bfc1114b7f34dd1bea2f075ba8ebf8.zip"
     },
     "Environment": {
      "Variables": {
@@ -301,7 +301,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CostWatchApiStack/GetDashboardFunction/Resource",
-    "aws:asset:path": "asset.3ffae925e5d9ce60e8832a5627e1234343226f202c7d5bdba22e3c48094d5a13",
+    "aws:asset:path": "asset.884b6673a7912caffda6c08792570e68b9bfc1114b7f34dd1bea2f075ba8ebf8",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
